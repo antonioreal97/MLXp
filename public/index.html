@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Xperience</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            background: url('images/fundo.png') no-repeat center center fixed; /* Atualizando o fundo para usar a mesma imagem */
+            background-size: cover;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Leve sobreposição preta com opacidade */
+        }
+        .content {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2; /* Para garantir que o conteúdo esteja acima da overlay */
+        }
+        .title {
+            font-size: 4em;
+            font-weight: bold;
+        }
+        .title span {
+            color: #007bff; /* Azul para a palavra "ML" */
+        }
+        .subtitle {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        .btn-group {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .btn-group .btn {
+            background-color: #000320; /* Cor do botão */
+            border: none;
+            color: white;
+            margin-left: 10px;
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-group .btn:hover {
+            background-color: #05002e; /* Mudança de cor ao passar o mouse */
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+
+    <div class="btn-group">
+        <button class="btn" onclick="redirectTo('register')">Cadastro</button>
+        <button class="btn" onclick="redirectTo('login')">Login</button>
+    </div>
+
+    <div class="content">
+        <div class="title"><span>ML</span> Xperience</div>
+        <div class="subtitle">Converse com nossas personalidades ou crie a sua própria!</div>
+    </div>
+
+    <div>
+        <i></i>
+    </div>
+
+    <script>
+        function redirectTo(page) {
+            if (page === 'login') {
+                window.location.href = '/login.html'; // Redireciona para a página de login
+            } else if (page === 'register') {
+                window.location.href = '/login.html'; // Redireciona para a página de cadastro (mantendo o cadastro na página de login)
+            }
+        }
+    </script>
+</body>
+</html>
+

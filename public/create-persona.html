@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Criar Nova Persona</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('images/create-personas.png'); /* Caminho da sua imagem de fundo */
+      background-size: cover; /* Garante que a imagem cubra toda a tela */
+      background-position: center; /* Centraliza a imagem */
+      background-repeat: no-repeat; /* Evita repetição da imagem */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: rgba(240, 240, 240, 0.493); /* Fundo com opacidade */
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-control {
+      margin-bottom: 15px;
+    }
+    .btn-create {
+      width: 100%;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Criar Nova Persona</h1>
+    <form id="createPersonaForm">
+      <div class="mb-3">
+        <label for="personaName" class="form-label">Nome da Persona</label>
+        <input type="text" class="form-control" id="personaName" placeholder="Digite o nome da persona" required>
+      </div>
+      <div class="mb-3">
+        <label for="personaDescription" class="form-label">Descrição da Persona</label>
+        <textarea class="form-control" id="personaDescription" rows="3" placeholder="Digite a descrição da persona" required></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="personaImage" class="form-label">Imagem da Persona (URL ou Base64)</label>
+        <input type="text" class="form-control" id="personaImage" placeholder="URL da imagem (opcional)">
+      </div>
+      <button type="button" class="btn btn-primary btn-create" onclick="createPersona()">Criar Persona</button>
+    </form>
+  </div>
+
+  <script>
+    async function createPersona() {
+      const name = document.getElementById('personaName').value;
+      const description = document.getElementById('personaDescription').value;
+      const image = document.getElementById('personaImage').value || '/images/default.png'; // Define uma imagem padrão se o campo estiver vazio
+
+      if (!name || !description) {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/create-persona', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, description, image }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 201) {
+          alert('Persona criada com sucesso!');
+          window.location.href = '/user-personas.html'; // Redireciona para a página de personas criadas
+        } else {
+          alert('Erro ao criar persona: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Erro ao criar persona:', error);
+        alert('Erro ao criar persona.');
+      }
+    }
+  </script>
+</body>
+</html>

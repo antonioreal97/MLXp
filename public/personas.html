@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MLX - Personas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('images/fundo2.png'); /* Caminho da sua imagem de fundo */
+      background-size: cover; /* Garante que a imagem cubra toda a tela */
+      background-position: center; /* Centraliza a imagem de fundo */
+      background-repeat: no-repeat; /* Evita repetição da imagem */
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #c0c0c063; /* Cor de fundo com opacidade */
+    }
+    .header {
+      background-color: rgba(211, 211, 211, 0.384);
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 24px;
+    }
+    .main-content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    .left-panel, .right-panel {
+      background-color: rgba(211, 211, 211, 0.397); /* Fundo com leve transparência */
+      padding: 10px;
+    }
+    .left-panel {
+      width: 20%;
+    }
+    .right-panel {
+      width: 20%;
+    }
+    .main-content {
+      background-color: rgba(211, 211, 211, 0.39);
+      padding: 10px;
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+    }
+    .user-profile, .persona-library, .persona-list {
+      background-color: rgba(169, 169, 169, 0.384);
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+    .persona-list img {
+      width: 80px;
+      height: 80px;
+      margin-right: 10px;
+      cursor: pointer;
+      background-color: transparent;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #007bffbe;
+      transition: transform 0.3s ease;
+    }
+    .persona-list img:hover {
+      transform: scale(1.1);
+    }
+    .persona-section img {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      background-color: rgba(224, 224, 224, 0.404);
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .chat-message {
+      margin-bottom: 10px;
+    }
+    .chat-message.user {
+      text-align: right;
+    }
+    .chat-message.ai {
+      text-align: left;
+    }
+    .message-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(169, 169, 169, 0.295);
+      padding: 10px;
+    }
+    .message-box input {
+      width: 90%;
+      height: 100%;
+      border: none;
+      padding: 10px;
+      margin-right: 10px;
+    }
+    .message-box button {
+      background-color: rgba(169, 169, 169, 0.411);
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .btn-access-personas,
+    .btn-create-persona {
+      width: 100%;
+      padding: 15px;
+      background-color: #007bffc9;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 5px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    .btn-access-personas:hover,
+    .btn-create-persona:hover {
+      background-color: #0057b3cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      MLX
+    </div>
+    
+    <!-- Main Layout with Left, Center and Right Panels -->
+    <div class="main-content-wrapper">
+      
+      <!-- Left Panel -->
+      <div class="left-panel col-md-3">
+        <div class="user-profile">
+          <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
+        </div>
+        <div class="persona-library">
+          LLM: <span id="model-name">Carregando...</span> <!-- Mostrar modelo -->
+        </div>
+        <div class="persona-library">
+          BIBLIOTECA DE PERSONAS
+        </div>
+        <div class="persona-list">
+          <img src="images/batman-logo.png" alt="Persona 1" onclick="selectPersona('Batman', 'images/batman-logo.png')">
+          <img src="images/harry-logo.png" alt="Persona 2" onclick="selectPersona('Harry Potter', 'images/harry-logo.png')">
+          <img src="images/jarvis-logo.png" alt="Persona 3" onclick="selectPersona('Jarvis', 'images/jarvis-logo.png')">
+        </div>
+        <!-- Botão para acessar as personas criadas -->
+        <div class="btn-access-personas" onclick="accessUserPersonas()">
+          Acessar Personas Criadas
+        </div>
+        <!-- Botão para criar nova persona -->
+        <div class="btn-create-persona" onclick="createNewPersona()">
+          Criar Nova Persona
+        </div>
+      </div>
+      
+      <!-- Main Content -->
+      <div class="main-content col-md-6">
+        <div class="chat-box" id="chatBox">
+          <!-- Mensagens irão aparecer aqui -->
+        </div>
+        <!-- Barra de mensagens ao final -->
+        <div class="message-box">
+          <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." />
+          <button onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Right Panel -->
+      <div class="right-panel col-md-3">
+        <div class="persona-section">
+          <div class="persona-library">
+            PERSONA:
+          </div>
+          <img src="images/persona-main.png" alt="Persona Image" id="selectedPersonaImage">
+          <div id="selectedPersonaName">Nenhuma persona selecionada</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedPersona = '';
+    const defaultPersonaImage = 'images/persona-main.png';
+
+    function loadLoggedUser() {
+      fetch('/get-logged-user')
+      .then(response => {
+        if (response.status === 401) {
+          window.location.href = '/'; // Redireciona para a página de login se o usuário não estiver autenticado
+        } 
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById('username').innerText = data.username || 'Desconhecido';
+      })
+      .catch(error => {
+        console.error('Erro ao carregar o nome do usuário:', error);
+        document.getElementById('username').innerText = 'Erro';
+      });
+    }
+
+    // Função de seleção de persona com imagem
+    function selectPersona(personaName, personaImage) {
+      selectedPersona = personaName;
+      document.getElementById('selectedPersonaName').innerText = personaName;
+      document.getElementById('selectedPersonaImage').src = personaImage || defaultPersonaImage;
+    }
+
+    async function sendMessage() {
+      const messageInput = document.getElementById('userMessage');
+      const message = messageInput.value.trim();
+      if (message === '' || selectedPersona === '') {
+        alert('Por favor, selecione uma persona e digite uma mensagem.');
+        return;
+      }
+
+      // Adiciona a mensagem do usuário no chat
+      addMessageToChat('user', message);
+
+      // Limpa o campo de mensagem
+      messageInput.value = '';
+
+      const useOpenAI = true;
+      const endpoint = useOpenAI ? '/send-message-openai' : '/send-message-llama';
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ persona: selectedPersona, message }),
+        });
+
+        if (response.status === 401) {
+          alert('Usuário não autenticado. Por favor, faça o login.');
+          window.location.href = '/';
+          return;
+        }
+
+        const data = await response.json();
+        if (data.reply) {
+          addMessageToChat('ai', data.reply);
+        } else {
+          addMessageToChat('ai', 'Desculpe, não consegui processar sua mensagem.');
+        }
+      } catch (error) {
+        console.error('Erro ao enviar mensagem:', error);
+        addMessageToChat('ai', 'Ocorreu um erro ao processar sua mensagem.');
+      }
+    }
+
+    function addMessageToChat(sender, message) {
+      const chatBox = document.getElementById('chatBox');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('chat-message', sender);
+      messageDiv.innerText = `${sender === 'user' ? 'Você' : 'AI'}: ${message}`;
+      chatBox.appendChild(messageDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function accessUserPersonas() {
+      window.location.href = '/user-personas.html';
+    }
+
+    function createNewPersona() {
+      window.location.href = '/create-persona.html';
+    }
+
+    // Carrega o nome do usuário e o modelo quando a página for carregada
+    window.onload = () => {
+      loadLoggedUser();
+
+      // Função para carregar o modelo atual em uso
+      fetch('/get-current-model')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('model-name').innerText = data.model || 'Desconhecido';
+        })
+        .catch(error => {
+          console.error('Erro ao carregar o modelo:', error);
+          document.getElementById('model-name').innerText = 'Erro';
+        });
+    };
+  </script>
+</body>
+</html>

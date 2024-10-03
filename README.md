@@ -1,2 +1,12 @@
-# MLXp
-MLXp
+- projeto-chat/
+  - public/
+    - index.html
+    - styles.css
+    - script.js
+  - server/
+    - app.js
+    - routes.js
+    - personaHandler.js
+    - aiIntegration.js
+  - package.json
+  - README.md

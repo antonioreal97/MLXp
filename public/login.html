@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Cadastro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('images/fundo.png'); /* Caminho para a sua imagem de fundo */
+            background-size: cover; /* Garante que a imagem cubra toda a página */
+            background-position: center; /* Centraliza a imagem */
+            background-repeat: no-repeat; /* Evita que a imagem se repita */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: rgba(122, 122, 122, 0.8); /* Fundo semitransparente */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .login-container h1 {
+            color: white;
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+        .form-control {
+            background-color: #b3b3b3;
+            border: none;
+            color: #d3d3d3;
+            margin-bottom: 20px;
+            height: 45px;
+            font-size: 18px;
+        }
+        .btn-login, .btn-register {
+            background-color: #d3d3d3;
+            color: #7a7a7a;
+            border: none;
+            width: 100%;
+            height: 45px;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .forgot-password {
+            color: white;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        .email-field {
+            display: none; /* Inicialmente oculto */
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>MLX</h1>
+        <input type="text" class="form-control" id="username" placeholder="Usuário">
+        <input type="password" class="form-control" id="password" placeholder="Senha">
+        <input type="email" class="form-control email-field" id="email" placeholder="Email"> <!-- Campo de email oculto -->
+        <button class="btn btn-login" onclick="login()">LOGIN</button>
+        <button class="btn btn-register" onclick="toggleRegister()">CADASTRO</button>
+        <div class="forgot-password">ESQUECI MINHA SENHA</div>
+    </div>
+
+    <script>
+        let isRegistering = false;
+
+        function toggleRegister() {
+            const emailField = document.getElementById('email');
+            const registerButton = document.querySelector('.btn-register');
+            const loginButton = document.querySelector('.btn-login');
+
+            if (!isRegistering) {
+                // Exibe o campo de email para registro
+                emailField.style.display = 'block';
+                registerButton.innerText = 'FINALIZAR CADASTRO';
+                loginButton.style.display = 'none'; // Oculta o botão de login
+                isRegistering = true;
+            } else {
+                // Realiza o cadastro
+                register();
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                alert('Por favor, preencha todos os campos de login.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (response.status === 200) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Erro ao realizar o login:', error);
+                alert('Ocorreu um erro ao tentar fazer login.');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+
+            if (!username || !password || !email) {
+                alert('Por favor, preencha todos os campos para realizar o cadastro.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, email })
+                });
+
+                const data = await response.json();
+                if (response.status === 201) {
+                    alert('Cadastro realizado com sucesso!');
+                    resetToLogin();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Erro ao realizar o cadastro:', error);
+                alert('Ocorreu um erro ao tentar realizar o cadastro.');
+            }
+        }
+
+        function resetToLogin() {
+            const emailField = document.getElementById('email');
+            const registerButton = document.querySelector('.btn-register');
+            const loginButton = document.querySelector('.btn-login');
+
+            // Oculta o campo de email, altera o texto do botão e exibe o botão de login
+            emailField.style.display = 'none';
+            registerButton.innerText = 'CADASTRO';
+            loginButton.style.display = 'block';
+            isRegistering = false;
+
+            // Limpa os campos
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('email').value = '';
+        }
+    </script>
+</body>
+</html>
