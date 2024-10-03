@@ -6,30 +6,61 @@
   <title>Criar Nova Persona</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-image: url('images/create-personas.png'); /* Caminho da sua imagem de fundo */
-      background-size: cover; /* Garante que a imagem cubra toda a tela */
-      background-position: center; /* Centraliza a imagem */
-      background-repeat: no-repeat; /* Evita repetição da imagem */
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      color: white;
+      overflow: hidden; /* Remove o scroll para manter o efeito imersivo */
     }
+
+    /* Efeito parallax na imagem de fundo */
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 110%;
+      height: 110%;
+      background: url('images/create-personas.png') no-repeat center center fixed;
+      background-size: cover;
+      transition: transform 0.1s ease-out;
+      z-index: 1;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6); /* Escurece a imagem de fundo */
+      z-index: 2; /* Overlay acima da imagem de fundo, mas abaixo do conteúdo */
+      transition: filter 0.3s ease, brightness 0.3s ease;
+    }
+
     .container {
       background-color: rgba(240, 240, 240, 0.493); /* Fundo com opacidade */
       padding: 40px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 3; /* Conteúdo acima da overlay */
+      position: relative;
+      color: black; /* Cor do texto */
     }
+
     h1 {
       text-align: center;
       margin-bottom: 20px;
+      color: white;
     }
+
     .form-control {
       margin-bottom: 15px;
     }
+
     .btn-create {
       width: 100%;
       margin-top: 10px;
@@ -37,6 +68,9 @@
   </style>
 </head>
 <body>
+  <div class="background"></div>
+  <div class="overlay"></div>
+
   <div class="container">
     <h1>Criar Nova Persona</h1>
     <form id="createPersonaForm">
@@ -57,6 +91,14 @@
   </div>
 
   <script>
+    // Efeito parallax para a imagem de fundo
+    document.addEventListener('mousemove', function(e) {
+      const background = document.querySelector('.background');
+      const amountMovedX = (e.clientX / window.innerWidth * 30) - 15;
+      const amountMovedY = (e.clientY / window.innerHeight * 30) - 15;
+      background.style.transform = `translate(${amountMovedX}px, ${amountMovedY}px) scale(1.05)`;
+    });
+
     async function createPersona() {
       const name = document.getElementById('personaName').value;
       const description = document.getElementById('personaDescription').value;

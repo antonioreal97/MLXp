@@ -6,29 +6,57 @@
     <title>Login / Cadastro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-image: url('images/fundo.png'); /* Caminho para a sua imagem de fundo */
-            background-size: cover; /* Garante que a imagem cubra toda a página */
-            background-position: center; /* Centraliza a imagem */
-            background-repeat: no-repeat; /* Evita que a imagem se repita */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            color: white;
+            overflow: hidden; /* Remove o scroll para manter o efeito imersivo */
         }
+
+        /* Efeito parallax na imagem de fundo */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110%;
+            background: url('images/fundo.png') no-repeat center center fixed;
+            background-size: cover;
+            transition: transform 0.1s ease-out;
+            z-index: 1;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Escurece a imagem de fundo */
+            z-index: 2; /* Overlay acima da imagem de fundo, mas abaixo do conteúdo */
+            transition: filter 0.3s ease, brightness 0.3s ease;
+        }
+
         .login-container {
             background-color: rgba(122, 122, 122, 0.8); /* Fundo semitransparente */
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            z-index: 3; /* Conteúdo acima da overlay */
+            position: relative;
         }
+
         .login-container h1 {
             color: white;
             font-size: 36px;
             margin-bottom: 30px;
         }
+
         .form-control {
             background-color: #b3b3b3;
             border: none;
@@ -37,6 +65,7 @@
             height: 45px;
             font-size: 18px;
         }
+
         .btn-login, .btn-register {
             background-color: #d3d3d3;
             color: #7a7a7a;
@@ -46,17 +75,26 @@
             font-size: 18px;
             margin-bottom: 10px;
         }
+
         .forgot-password {
             color: white;
             font-size: 14px;
             margin-top: 20px;
         }
+
         .email-field {
             display: none; /* Inicialmente oculto */
+        }
+
+        .btn-login:hover, .btn-register:hover {
+            background-color: #c3c3c3; /* Efeito ao passar o mouse nos botões */
         }
     </style>
 </head>
 <body>
+    <div class="background"></div>
+    <div class="overlay"></div>
+
     <div class="login-container">
         <h1>MLX</h1>
         <input type="text" class="form-control" id="username" placeholder="Usuário">
@@ -68,6 +106,19 @@
     </div>
 
     <script>
+        // Efeito parallax para a imagem de fundo
+        document.addEventListener('mousemove', function(e) {
+            const background = document.querySelector('.background');
+            const amountMovedX = (e.clientX / window.innerWidth * 30) - 15;
+            const amountMovedY = (e.clientY / window.innerHeight * 30) - 15;
+            background.style.transform = `translate(${amountMovedX}px, ${amountMovedY}px) scale(1.05)`;
+        });
+
+        // Redirecionar para a página inicial ao clicar na imagem de fundo ou overlay
+        document.querySelector('.overlay').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
         let isRegistering = false;
 
         function toggleRegister() {

@@ -135,6 +135,12 @@
       padding: 10px;
       cursor: pointer;
     }
+    /* Ícone de loading */
+    #loadingIcon {
+      font-size: 24px;
+      color: #007bff;
+      display: none; /* Oculto por padrão */
+    }
   </style>
 </head>
 <body>
@@ -167,6 +173,7 @@
           <button onclick="startGroupChat()">
             <i class="fas fa-paper-plane"></i>
           </button>
+          <i id="loadingIcon" class="fas fa-spinner fa-spin"></i> <!-- Ícone de loading -->
         </div>
       </div>
 
@@ -264,8 +271,11 @@
         return;
       }
 
+      const loadingIcon = document.getElementById('loadingIcon');
+      loadingIcon.style.display = 'inline-block'; // Mostra o ícone de loading
+
       // Envia a mensagem para cada persona
-      selectedPersonas.forEach(async (persona) => {
+      for (const persona of selectedPersonas) {
         try {
           const response = await fetch('/send-message-openai', {
             method: 'POST',
@@ -285,7 +295,9 @@
           console.error('Erro ao enviar mensagem:', error);
           addMessageToChat('AI', 'Ocorreu um erro ao processar sua mensagem.');
         }
-      });
+      }
+
+      loadingIcon.style.display = 'none'; // Esconde o ícone de loading
     }
 
     // Função para adicionar mensagens ao chat

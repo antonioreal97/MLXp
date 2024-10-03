@@ -13,56 +13,89 @@
             font-family: Arial, sans-serif;
             color: white;
             text-align: center;
-            background: url('images/fundo.png') no-repeat center center fixed; /* Atualizando o fundo para usar a mesma imagem */
-            background-size: cover;
+            overflow: hidden; /* Remove o scroll para manter o efeito imersivo */
         }
+
+        /* A imagem de fundo agora tem o efeito 3D */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110%;
+            background: url('images/fundo.png') no-repeat center center fixed;
+            background-size: cover;
+            transition: transform 0.1s ease-out;
+            z-index: 1;
+        }
+
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6); /* Leve sobreposição preta com opacidade */
+            background: rgba(0, 0, 0, 0.514);
+            z-index: 2; /* Overlay acima da imagem de fundo, mas abaixo dos botões */
+            transition: filter 0.3s ease, brightness 0.3s ease;
         }
+
         .content {
             position: relative;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 2; /* Para garantir que o conteúdo esteja acima da overlay */
+            z-index: 3; /* Conteúdo acima da overlay */
         }
+
         .title {
             font-size: 4em;
             font-weight: bold;
         }
+
         .title span {
-            color: #007bff; /* Azul para a palavra "ML" */
+            color: #007bff;
         }
+
         .subtitle {
             font-size: 1.5em;
             margin-top: 20px;
         }
+
         .btn-group {
             position: absolute;
             top: 20px;
             right: 20px;
+            z-index: 3; /* Botões acima da overlay */
         }
+
         .btn-group .btn {
-            background-color: #000320; /* Cor do botão */
+            background-color: #000320;
             border: none;
             color: white;
             margin-left: 10px;
             font-size: 16px;
             padding: 10px 20px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, filter 0.3s ease;
         }
+
         .btn-group .btn:hover {
-            background-color: #05002e; /* Mudança de cor ao passar o mouse */
+            background-color: #05002e;
         }
-        
+
+        /* Invertendo o efeito de desfoque ao passar o mouse sobre os botões */
+        .btn-group:hover ~ .overlay {
+            filter: blur(0px) brightness(1.2); /* Remover o desfoque e aumentar o brilho */
+        }
+
+        /* Efeito de foco nos botões */
+        .btn-group .btn:hover {
+            filter: brightness(1.3); /* Aumenta o brilho nos botões */
+        }
     </style>
 </head>
 <body>
+    <div class="background"></div>
     <div class="overlay"></div>
 
     <div class="btn-group">
@@ -75,11 +108,15 @@
         <div class="subtitle">Converse com nossas personalidades ou crie a sua própria!</div>
     </div>
 
-    <div>
-        <i></i>
-    </div>
-
     <script>
+        // Efeito parallax para a imagem de fundo
+        document.addEventListener('mousemove', function(e) {
+            const background = document.querySelector('.background');
+            const amountMovedX = (e.clientX / window.innerWidth * 30) - 15;
+            const amountMovedY = (e.clientY / window.innerHeight * 30) - 15;
+            background.style.transform = `translate(${amountMovedX}px, ${amountMovedY}px) scale(1.05)`;
+        });
+
         function redirectTo(page) {
             if (page === 'login') {
                 window.location.href = '/login.html'; // Redireciona para a página de login
@@ -90,4 +127,3 @@
     </script>
 </body>
 </html>
-
