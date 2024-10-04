@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat em Grupo com Personas</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
@@ -30,6 +30,20 @@
       text-align: center;
       font-weight: bold;
       font-size: 24px;
+      position: relative;
+    }
+    .back-btn {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
     }
     .main-content-wrapper {
       flex: 1;
@@ -74,10 +88,13 @@
     .persona-list img:hover {
       transform: scale(1.1);
     }
+    .selected {
+      border-color: #28a745;
+    }
     .persona-section img {
-      width: 80px;
-      height: 80px;
-      margin-right: 10px;
+      width: 100%;
+      height: 150px;
+      margin-bottom: 20px;
       border-radius: 50%;
       object-fit: cover;
     }
@@ -118,22 +135,18 @@
       padding: 10px;
       cursor: pointer;
     }
-    .selected-personas {
-      display: flex;
-      flex-wrap: wrap;
-    }
-    .selected-personas img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 5px;
+    /* Ícone de loading */
+    #loadingIcon {
+      font-size: 24px;
+      color: #007bff;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Header -->
     <div class="header">
+      <button class="back-btn" onclick="goBack()">Voltar</button>
       Chat em Grupo com Personas
     </div>
 
@@ -144,31 +157,26 @@
           <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
         </div>
         <div class="persona-list" id="personaList">
-          <!-- As personas criadas serão exibidas aqui -->
         </div>
       </div>
 
       <!-- Main Content -->
       <div class="main-content col-md-6">
-        <div class="chat-box" id="chatBox">
-          <!-- Mensagens do chat serão exibidas aqui -->
-        </div>
-        <!-- Barra de mensagens ao final -->
+        <div class="chat-box" id="chatBox"></div>
         <div class="message-box">
           <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." />
-          <button onclick="sendGroupMessage()">
+          <button onclick="startGroupChat()">
             <i class="fas fa-paper-plane"></i>
           </button>
+          <i id="loadingIcon" class="fas fa-spinner fa-spin"></i>
         </div>
       </div>
 
       <!-- Right Panel -->
       <div class="right-panel col-md-3">
         <div class="persona-section">
-          <div>PERSONAS SELECIONADAS:</div>
-          <div class="selected-personas" id="selectedPersonas">
-            <!-- Imagens das personas selecionadas -->
-          </div>
+          <div class="persona-library">PERSONAS SELECIONADAS:</div>
+          <div id="selectedPersonas"></div>
         </div>
       </div>
     </div>
@@ -176,6 +184,10 @@
 
   <script>
     let selectedPersonas = [];
+
+    function goBack() {
+      window.location.href = '/user-personas.html';
+    }
 
     function loadLoggedUser() {
       fetch('/get-logged-user')
@@ -189,19 +201,17 @@
         });
     }
 
-    // Função para carregar as personas criadas
     async function loadUserPersonas() {
       try {
         const response = await fetch('/personas');
         const personas = await response.json();
         const personaList = document.getElementById('personaList');
-
         personaList.innerHTML = '';
 
         personas.forEach((persona) => {
           const personaDiv = document.createElement('div');
           personaDiv.innerHTML = `
-            <img src="${persona.image}" alt="${persona.name}" onclick="togglePersonaSelection('${persona.name}', '${persona.image}')">
+            <img src="${persona.image}" alt="${persona.name}" onclick="toggleSelectPersona('${persona.name}', '${persona.image}')">
             <span>${persona.name}</span>
           `;
           personaList.appendChild(personaDiv);
@@ -211,84 +221,98 @@
       }
     }
 
-    // Função para selecionar/desselecionar uma persona
-    function togglePersonaSelection(personaName, personaImage) {
-      const alreadySelected = selectedPersonas.find(p => p.name === personaName);
-
-      if (alreadySelected) {
-        // Remove da seleção
-        selectedPersonas = selectedPersonas.filter(p => p.name !== personaName);
-      } else {
-        // Adiciona à seleção
+    function toggleSelectPersona(personaName, personaImage) {
+      const index = selectedPersonas.findIndex(p => p.name === personaName);
+      if (index === -1) {
         selectedPersonas.push({ name: personaName, image: personaImage });
+      } else {
+        selectedPersonas.splice(index, 1);
       }
-
-      updateSelectedPersonasUI();
+      updateSelectedPersonasDisplay();
     }
 
-    function updateSelectedPersonasUI() {
-      const selectedPersonasDiv = document.getElementById('selectedPersonas');
-      selectedPersonasDiv.innerHTML = '';
-      selectedPersonas.forEach(persona => {
+    function updateSelectedPersonasDisplay() {
+      const selectedDiv = document.getElementById('selectedPersonas');
+      selectedDiv.innerHTML = '';
+      selectedPersonas.forEach((persona) => {
         const img = document.createElement('img');
         img.src = persona.image;
         img.alt = persona.name;
-        selectedPersonasDiv.appendChild(img);
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.style.borderRadius = '50%';
+        img.style.margin = '5px';
+        selectedDiv.appendChild(img);
       });
     }
 
-    // Função para enviar uma mensagem para o grupo de personas
-    async function sendGroupMessage() {
-      const messageInput = document.getElementById('userMessage');
-      const message = messageInput.value.trim();
-      if (message === '' || selectedPersonas.length === 0) {
-        alert('Por favor, selecione pelo menos uma persona e digite uma mensagem.');
+    function getCsrfToken() {
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+      return csrfToken;
+    }
+
+    async function startGroupChat() {
+      if (selectedPersonas.length === 0) {
+        alert('Por favor, selecione ao menos uma persona.');
         return;
       }
 
-      // Adiciona a mensagem do usuário no chat
-      addMessageToChat('user', message);
-
-      // Limpa o campo de mensagem
-      messageInput.value = '';
-
-      // Envia a mensagem para cada persona com intervalo de tempo
-      for (let persona of selectedPersonas) {
-        setTimeout(async () => {
-          try {
-            const response = await fetch('/send-message-openai', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ persona: persona.name, message }),
-            });
-
-            const data = await response.json();
-            if (data.reply) {
-              addMessageToChat('ai', `${persona.name}: ${data.reply}`);
-            } else {
-              addMessageToChat('ai', `${persona.name}: Desculpe, não consegui processar sua mensagem.`);
-            }
-          } catch (error) {
-            console.error('Erro ao enviar mensagem:', error);
-            addMessageToChat('ai', `${persona.name}: Ocorreu um erro ao processar sua mensagem.`);
-          }
-        }, Math.random() * 2000); // Intervalo aleatório entre 0 e 2 segundos
+      const message = document.getElementById('userMessage').value.trim();
+      if (!message) {
+        alert('Digite uma mensagem.');
+        return;
       }
+
+      const csrfToken = getCsrfToken();
+      const loadingIcon = document.getElementById('loadingIcon');
+      loadingIcon.style.display = 'inline-block';
+      
+      // Adiciona a mensagem do usuário no chat
+      addMessageToChat('Você', message);
+
+      let lastResponse = message;
+
+      for (const persona of selectedPersonas) {
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Intervalo de 3 segundos
+
+        try {
+          const response = await fetch('/send-message-openai', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ persona: persona.name, message: lastResponse }),
+          });
+
+          const data = await response.json();
+          if (data.reply) {
+            addMessageToChat(persona.name, data.reply);
+            lastResponse = data.reply;  // A próxima persona responderá à última resposta
+          } else {
+            addMessageToChat('AI', 'Desculpe, não consegui processar sua mensagem.');
+          }
+        } catch (error) {
+          console.error('Erro ao enviar mensagem:', error);
+          addMessageToChat('AI', 'Ocorreu um erro ao processar sua mensagem.');
+        }
+      }
+
+      loadingIcon.style.display = 'none';
     }
 
-    // Função para adicionar mensagens ao chat
     function addMessageToChat(sender, message) {
       const chatBox = document.getElementById('chatBox');
       const messageDiv = document.createElement('div');
-      messageDiv.classList.add('chat-message', sender);
-      messageDiv.innerText = `${sender === 'user' ? 'Você' : message}`;
+      messageDiv.classList.add('chat-message');
+      messageDiv.innerText = `${sender}: ${message}`;
       chatBox.appendChild(messageDiv);
-      chatBox.scrollTop = chatBox.scrollHeight; // Scroll para a última mensagem
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // Carrega as personas criadas e o nome do usuário ao carregar a página
     window.onload = () => {
       loadLoggedUser();
       loadUserPersonas();

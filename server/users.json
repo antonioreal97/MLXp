@@ -3,5 +3,10 @@
     "username": "antonio",
     "password": "$2b$10$qt28IDzvcTK1QeSUDT1EM.YeY1DbFDkNzgCx1eZJ9pwOvn9Pz6nHO",
     "email": "antonioreal97@gmail.com"
+  },
+  {
+    "username": "ana",
+    "password": "$2b$10$N8e1cGfPpM7zTo8UM3WmjOZyJ6ADM5GGCIbZus61CVL8NVSma5VGS",
+    "email": "a@gmail.com"
   }
 ]
