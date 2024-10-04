@@ -6,11 +6,21 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const axios = require('axios'); // Para comunicação com o modelo local (Ollama)
 const { Configuration, OpenAIApi } = require('openai'); // Para usar a API da OpenAI
+const csrf = require('csurf'); // Middleware CSRF
+const cookieParser = require('cookie-parser'); // Para gerenciar cookies
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve arquivos estáticos
+app.use(cookieParser()); // Utiliza o cookie-parser para gerenciar cookies
+app.use(csrf({ cookie: true })); // Configura o middleware CSRF com cookies
+
+// Middleware para enviar o token CSRF para o cliente via cookies
+app.use((req, res, next) => {
+  res.cookie('XSRF-TOKEN', req.csrfToken()); // Envia o token CSRF ao cliente
+  next();
+});
 
 // Configura a API da OpenAI
 const configuration = new Configuration({
@@ -182,6 +192,11 @@ app.post('/send-message-openai', isAuthenticated, async (req, res) => {
 // Rota para obter o modelo atual (por exemplo, GPT-4)
 app.get('/get-current-model', (req, res) => {
   res.json({ model: 'GPT-4' }); // Altere para o modelo real que você está usando
+});
+
+// Rota para carregar formulário com token CSRF
+app.get('/get-csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
 });
 
 // Inicia o servidor

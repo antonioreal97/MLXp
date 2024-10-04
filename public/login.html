@@ -14,10 +14,9 @@
             justify-content: center;
             align-items: center;
             color: white;
-            overflow: hidden; /* Remove o scroll para manter o efeito imersivo */
+            overflow: hidden;
         }
 
-        /* Efeito parallax na imagem de fundo */
         .background {
             position: absolute;
             top: 0;
@@ -36,18 +35,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6); /* Escurece a imagem de fundo */
-            z-index: 2; /* Overlay acima da imagem de fundo, mas abaixo do conteúdo */
-            transition: filter 0.3s ease, brightness 0.3s ease;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2;
         }
 
         .login-container {
-            background-color: rgba(122, 122, 122, 0.8); /* Fundo semitransparente */
+            background-color: rgba(122, 122, 122, 0.8);
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            z-index: 3; /* Conteúdo acima da overlay */
+            z-index: 3;
             position: relative;
         }
 
@@ -83,11 +81,11 @@
         }
 
         .email-field {
-            display: none; /* Inicialmente oculto */
+            display: none;
         }
 
         .btn-login:hover, .btn-register:hover {
-            background-color: #c3c3c3; /* Efeito ao passar o mouse nos botões */
+            background-color: #c3c3c3;
         }
     </style>
 </head>
@@ -114,7 +112,6 @@
             background.style.transform = `translate(${amountMovedX}px, ${amountMovedY}px) scale(1.05)`;
         });
 
-        // Redirecionar para a página inicial ao clicar na imagem de fundo ou overlay
         document.querySelector('.overlay').addEventListener('click', function() {
             window.location.href = 'index.html';
         });
@@ -127,20 +124,28 @@
             const loginButton = document.querySelector('.btn-login');
 
             if (!isRegistering) {
-                // Exibe o campo de email para registro
                 emailField.style.display = 'block';
                 registerButton.innerText = 'FINALIZAR CADASTRO';
-                loginButton.style.display = 'none'; // Oculta o botão de login
+                loginButton.style.display = 'none';
                 isRegistering = true;
             } else {
-                // Realiza o cadastro
                 register();
             }
         }
 
+        // Função para buscar o token CSRF do servidor e armazenar em um cookie
+        async function fetchCsrfToken() {
+            const response = await fetch('/get-csrf-token');
+            const data = await response.json();
+            document.cookie = `XSRF-TOKEN=${data.csrfToken}; path=/;`;
+        }
+
+        window.onload = fetchCsrfToken; // Garante que o token CSRF seja obtido assim que a página carrega
+
         async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
 
             if (!username || !password) {
                 alert('Por favor, preencha todos os campos de login.');
@@ -150,14 +155,18 @@
             try {
                 const response = await fetch('/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken // Adiciona o token CSRF
+                    },
                     body: JSON.stringify({ username, password })
                 });
 
-                const data = await response.json();
-                if (response.status === 200) {
+                if (response.ok) {
+                    const data = await response.json();
                     window.location.href = data.redirectUrl;
                 } else {
+                    const data = await response.json();
                     alert(data.message);
                 }
             } catch (error) {
@@ -170,6 +179,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const email = document.getElementById('email').value;
+            const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
 
             if (!username || !password || !email) {
                 alert('Por favor, preencha todos os campos para realizar o cadastro.');
@@ -179,15 +189,18 @@
             try {
                 const response = await fetch('/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken // Adiciona o token CSRF
+                    },
                     body: JSON.stringify({ username, password, email })
                 });
 
-                const data = await response.json();
-                if (response.status === 201) {
+                if (response.ok) {
                     alert('Cadastro realizado com sucesso!');
                     resetToLogin();
                 } else {
+                    const data = await response.json();
                     alert(data.message);
                 }
             } catch (error) {
@@ -201,13 +214,11 @@
             const registerButton = document.querySelector('.btn-register');
             const loginButton = document.querySelector('.btn-login');
 
-            // Oculta o campo de email, altera o texto do botão e exibe o botão de login
             emailField.style.display = 'none';
             registerButton.innerText = 'CADASTRO';
             loginButton.style.display = 'block';
             isRegistering = false;
 
-            // Limpa os campos
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
             document.getElementById('email').value = '';

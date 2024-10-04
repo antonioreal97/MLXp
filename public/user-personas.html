@@ -228,7 +228,7 @@
         </div>
         <!-- Barra de mensagens ao final -->
         <div class="message-box">
-          <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." />
+          <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." onkeydown="handleKeyPress(event)" />
           <button id="sendButton" onclick="sendMessage()">
             <i class="fas fa-paper-plane"></i>
           </button>
@@ -302,12 +302,22 @@
       }, 1000);
     }
 
+    // Função para obter o token CSRF do cookie
+    function getCsrfToken() {
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+      return csrfToken;
+    }
+
     // Função para enviar mensagem
     async function sendMessage() {
       const messageInput = document.getElementById('userMessage');
       const message = messageInput.value.trim();
       const sendButton = document.getElementById('sendButton');
       const loadingIcon = document.getElementById('loadingIcon');
+      const csrfToken = getCsrfToken();
 
       if (message === '' || selectedPersona === '') {
         alert('Por favor, selecione uma persona e digite uma mensagem.');
@@ -329,6 +339,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken, // Adiciona o token CSRF
           },
           body: JSON.stringify({ persona: selectedPersona, message }),
         });
@@ -341,13 +352,13 @@
 
         const data = await response.json();
         if (data.reply) {
-          addMessageToChat('ai', data.reply);
+          addMessageToChat(selectedPersona, data.reply); // Use o nome da persona no lugar de "AI"
         } else {
-          addMessageToChat('ai', 'Desculpe, não consegui processar sua mensagem.');
+          addMessageToChat(selectedPersona, 'Desculpe, não consegui processar sua mensagem.');
         }
       } catch (error) {
         console.error('Erro ao enviar mensagem:', error);
-        addMessageToChat('ai', 'Ocorreu um erro ao processar sua mensagem.');
+        addMessageToChat(selectedPersona, 'Ocorreu um erro ao processar sua mensagem.');
       } finally {
         // Esconde o ícone de loading e habilita o botão de enviar
         loadingIcon.style.display = 'none';
@@ -359,8 +370,12 @@
     function addMessageToChat(sender, message) {
       const chatBox = document.getElementById('chatBox');
       const messageDiv = document.createElement('div');
-      messageDiv.classList.add('chat-message', sender);
-      messageDiv.innerText = `${sender === 'user' ? 'Você' : 'AI'}: ${message}`;
+      
+      // Sanitiza o nome da persona removendo espaços e substituindo por hífen
+      const sanitizedSender = sender.replace(/\s+/g, '-');
+      
+      messageDiv.classList.add('chat-message', sanitizedSender);
+      messageDiv.innerText = `${sender === 'user' ? 'Você' : sender}: ${message}`; // Exibe o nome da persona
       chatBox.appendChild(messageDiv);
       chatBox.scrollTop = chatBox.scrollHeight; // Scroll para a última mensagem
     }
@@ -368,6 +383,13 @@
     // Função para redirecionar para a página de personas
     function goBack() {
       window.location.href = '/personas.html';
+    }
+
+    // Função para enviar a mensagem ao pressionar "Enter"
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
     }
 
     // Carrega as personas criadas e o nome do usuário ao carregar a página
