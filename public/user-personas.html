@@ -45,6 +45,9 @@
       cursor: pointer;
       font-size: 14px;
     }
+    .header .back-btn:hover {
+      background-color: #0056b3;
+    }
     .main-content-wrapper {
       flex: 1;
       display: flex;
@@ -85,12 +88,10 @@
       border: 2px solid #007bffb4;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    /* Efeito de hover com brilho */
     .persona-list img:hover {
       transform: scale(1.1);
       box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
     }
-    /* Efeito de pulsar na persona selecionada */
     @keyframes pulsar {
       0%, 100% {
         transform: scale(1);
@@ -117,7 +118,6 @@
       border-radius: 5px;
       margin-bottom: 10px;
     }
-    /* Animação de fade-in para as mensagens do chat */
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -151,7 +151,6 @@
       padding: 10px;
       margin-right: 10px;
     }
-    /* Efeito de foco na caixa de entrada */
     .message-box input:focus {
       outline: none;
       border: 2px solid #007bff;
@@ -164,13 +163,11 @@
       padding: 10px;
       cursor: pointer;
     }
-    /* Ícone de loading */
     #loadingIcon {
       font-size: 20px;
       color: #007bff;
       display: none;
     }
-    /* Animação de rotação ao enviar mensagem */
     @keyframes rotate {
       from {
         transform: rotate(0deg);
@@ -182,7 +179,6 @@
     .message-box button:active i {
       animation: rotate 0.5s ease-in-out;
     }
-    /* Estilos para o botão de Group Chat */
     .group-chat-btn {
       width: 100%;
       padding: 15px;
@@ -198,45 +194,54 @@
     .group-chat-btn:hover {
       background-color: #218837c9;
     }
+    .edit-personas-btn {
+      width: 100%;
+      padding: 5px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 5px;
+      margin-top: 15px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .edit-personas-btn:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Header -->
     <div class="header">
       <button class="back-btn" onclick="goBack()">Voltar</button>
       Interação com Personas Criadas
     </div>
-    
+
     <div class="main-content-wrapper">
-      <!-- Left Panel -->
       <div class="left-panel col-md-3">
         <div class="user-profile">
           <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
         </div>
         <div class="persona-list" id="personaList">
-          <!-- As personas criadas serão exibidas aqui -->
         </div>
-        <!-- Botão de acesso ao Group Chat -->
+        <button class="edit-personas-btn" onclick="redirectToEdit()">Editar Personas</button>
         <a href="/group-chat.html" class="group-chat-btn">Group Chat</a>
       </div>
-      
-      <!-- Main Content -->
+
       <div class="main-content col-md-6">
-        <div class="chat-box" id="chatBox">
-          <!-- Mensagens do chat serão exibidas aqui -->
-        </div>
-        <!-- Barra de mensagens ao final -->
+        <div class="chat-box" id="chatBox"></div>
         <div class="message-box">
           <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." onkeydown="handleKeyPress(event)" />
           <button id="sendButton" onclick="sendMessage()">
             <i class="fas fa-paper-plane"></i>
           </button>
-          <i id="loadingIcon" class="fas fa-spinner fa-spin"></i> <!-- Ícone de loading -->
+          <i id="loadingIcon" class="fas fa-spinner fa-spin"></i>
         </div>
       </div>
-      
-      <!-- Right Panel -->
+
       <div class="right-panel col-md-3">
         <div class="persona-section">
           <div class="persona-library">
@@ -257,6 +262,7 @@
         .then(response => response.json())
         .then(data => {
           document.getElementById('username').innerText = data.username || 'Desconhecido';
+          loadUserPersonas(data.username);
         })
         .catch(error => {
           console.error('Erro ao carregar o nome do usuário:', error);
@@ -264,14 +270,13 @@
         });
     }
 
-    // Função para carregar as personas criadas
-    async function loadUserPersonas() {
+    async function loadUserPersonas(username) {
       try {
-        const response = await fetch('/personas'); // Busca todas as personas criadas
+        const response = await fetch(`/user-personas/${encodeURIComponent(username)}`);
         const personas = await response.json();
         const personaList = document.getElementById('personaList');
 
-        personaList.innerHTML = ''; // Limpa o conteúdo atual
+        personaList.innerHTML = '';
 
         personas.forEach((persona) => {
           const personaDiv = document.createElement('div');
@@ -286,23 +291,19 @@
       }
     }
 
-    // Função para selecionar a persona
     function selectPersona(personaName, personaImage) {
       selectedPersona = personaName;
       document.getElementById('selectedPersonaName').innerText = personaName;
       document.getElementById('selectedPersonaImage').src = personaImage;
 
-      // Adicionar animação à imagem da persona selecionada
       const selectedImage = document.getElementById('selectedPersonaImage');
       selectedImage.classList.add('selected');
 
-      // Remover a classe de animação após 1 segundo
       setTimeout(() => {
         selectedImage.classList.remove('selected');
       }, 1000);
     }
 
-    // Função para obter o token CSRF do cookie
     function getCsrfToken() {
       const csrfToken = document.cookie
         .split('; ')
@@ -311,7 +312,6 @@
       return csrfToken;
     }
 
-    // Função para enviar mensagem
     async function sendMessage() {
       const messageInput = document.getElementById('userMessage');
       const message = messageInput.value.trim();
@@ -324,13 +324,9 @@
         return;
       }
 
-      // Adiciona a mensagem do usuário no chat
       addMessageToChat('user', message);
 
-      // Limpa o campo de mensagem
       messageInput.value = '';
-
-      // Mostra o ícone de loading e desabilita o botão de enviar
       loadingIcon.style.display = 'inline-block';
       sendButton.disabled = true;
 
@@ -339,20 +335,20 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'CSRF-Token': csrfToken, // Adiciona o token CSRF
+            'CSRF-Token': csrfToken,
           },
           body: JSON.stringify({ persona: selectedPersona, message }),
         });
 
         if (response.status === 401) {
           alert('Usuário não autenticado. Por favor, faça o login.');
-          window.location.href = '/'; // Redireciona para a página de login
+          window.location.href = '/';
           return;
         }
 
         const data = await response.json();
         if (data.reply) {
-          addMessageToChat(selectedPersona, data.reply); // Use o nome da persona no lugar de "AI"
+          addMessageToChat(selectedPersona, data.reply);
         } else {
           addMessageToChat(selectedPersona, 'Desculpe, não consegui processar sua mensagem.');
         }
@@ -360,42 +356,38 @@
         console.error('Erro ao enviar mensagem:', error);
         addMessageToChat(selectedPersona, 'Ocorreu um erro ao processar sua mensagem.');
       } finally {
-        // Esconde o ícone de loading e habilita o botão de enviar
         loadingIcon.style.display = 'none';
         sendButton.disabled = false;
       }
     }
 
-    // Função para adicionar mensagens ao chat
     function addMessageToChat(sender, message) {
       const chatBox = document.getElementById('chatBox');
       const messageDiv = document.createElement('div');
-      
-      // Sanitiza o nome da persona removendo espaços e substituindo por hífen
+
       const sanitizedSender = sender.replace(/\s+/g, '-');
-      
       messageDiv.classList.add('chat-message', sanitizedSender);
-      messageDiv.innerText = `${sender === 'user' ? 'Você' : sender}: ${message}`; // Exibe o nome da persona
+      messageDiv.innerText = `${sender === 'user' ? 'Você' : sender}: ${message}`;
       chatBox.appendChild(messageDiv);
-      chatBox.scrollTop = chatBox.scrollHeight; // Scroll para a última mensagem
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // Função para redirecionar para a página de personas
     function goBack() {
       window.location.href = '/personas.html';
     }
 
-    // Função para enviar a mensagem ao pressionar "Enter"
+    function redirectToEdit() {
+      window.location.href = '/edit-personas.html';
+    }
+
     function handleKeyPress(event) {
       if (event.key === 'Enter') {
         sendMessage();
       }
     }
 
-    // Carrega as personas criadas e o nome do usuário ao carregar a página
     window.onload = () => {
       loadLoggedUser();
-      loadUserPersonas();
     };
   </script>
 </body>

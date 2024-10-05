@@ -164,13 +164,9 @@
         <div class="user-profile">
           <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
         </div>
-        <div class="persona-library">LLM: <span id="model-name">Carregando...</span></div>
+        <div class="persona-library">LLM: <span id="model-name">GPT-4</span></div>
         <div class="persona-library">BIBLIOTECA DE PERSONAS</div>
-        <div class="persona-list">
-          <img src="images/batman-logo.png" alt="Persona 1" onclick="selectPersona('Batman', 'images/batman-logo.png')">
-          <img src="images/harry-logo.png" alt="Persona 2" onclick="selectPersona('Harry Potter', 'images/harry-logo.png')">
-          <img src="images/jarvis-logo.png" alt="Persona 3" onclick="selectPersona('Jarvis', 'images/jarvis-logo.png')">
-        </div>
+        <div id="personaList" class="persona-list"></div> <!-- Lista de personas será inserida aqui -->
         <div class="btn-access-personas" onclick="accessUserPersonas()">Acessar Personas Criadas</div>
         <div class="btn-create-persona" onclick="createNewPersona()">Criar Nova Persona</div>
       </div>
@@ -208,6 +204,7 @@
       })
       .then(data => {
         document.getElementById('username').innerText = data.username || 'Desconhecido';
+        loadPersonas(); // Carregar personas públicas
       })
       .catch(error => {
         console.error('Erro ao carregar o nome do usuário:', error);
@@ -215,93 +212,34 @@
       });
     }
 
+    function loadPersonas() {
+      fetch('/personas.json')
+        .then(response => response.json())
+        .then(personas => {
+          const personaList = document.getElementById('personaList');
+          personaList.innerHTML = '';
+
+          if (personas.length > 0) {
+            personas.forEach(persona => displayPersona(persona, personaList));
+          } else {
+            personaList.innerHTML = '<p>Nenhuma persona pública disponível no momento.</p>';
+          }
+        })
+        .catch(error => console.error('Erro ao carregar personas:', error));
+    }
+
+    function displayPersona(persona, container) {
+      const img = document.createElement('img');
+      img.src = persona.image || defaultPersonaImage;
+      img.alt = persona.name;
+      img.onclick = () => selectPersona(persona.name, persona.image);
+      container.appendChild(img);
+    }
+
     function selectPersona(personaName, personaImage) {
       selectedPersona = personaName;
       document.getElementById('selectedPersonaName').innerText = personaName;
       document.getElementById('selectedPersonaImage').src = personaImage || defaultPersonaImage;
-    }
-
-    async function fetchCsrfToken() {
-      const response = await fetch('/get-csrf-token');
-      const data = await response.json();
-      document.cookie = `XSRF-TOKEN=${data.csrfToken}; path=/;`;
-    }
-
-    window.onload = () => {
-      loadLoggedUser();
-      fetchCsrfToken();
-
-      fetch('/get-current-model')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('model-name').innerText = data.model || 'Desconhecido';
-        })
-        .catch(error => {
-          console.error('Erro ao carregar o modelo:', error);
-          document.getElementById('model-name').innerText = 'Erro';
-        });
-    };
-
-    async function sendMessage() {
-      const messageInput = document.getElementById('userMessage');
-      const message = messageInput.value.trim();
-      const loadingIcon = document.getElementById('loadingIcon');
-      const sendButton = document.querySelector('button');
-
-      if (message === '' || selectedPersona === '') {
-        alert('Por favor, selecione uma persona e digite uma mensagem.');
-        return;
-      }
-
-      // Exibe o ícone de loading e desabilita o botão de envio
-      loadingIcon.style.display = 'inline-block';
-      sendButton.disabled = true;
-
-      addMessageToChat('user', message);
-      messageInput.value = '';
-
-      const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
-      const endpoint = '/send-message-openai';
-
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'CSRF-Token': csrfToken
-          },
-          body: JSON.stringify({ persona: selectedPersona, message })
-        });
-
-        if (response.status === 401) {
-          alert('Usuário não autenticado. Por favor, faça o login.');
-          window.location.href = '/';
-          return;
-        }
-
-        const data = await response.json();
-        if (data.reply) {
-          addMessageToChat('ai', data.reply);
-        } else {
-          addMessageToChat('ai', 'Desculpe, não consegui processar sua mensagem.');
-        }
-      } catch (error) {
-        console.error('Erro ao enviar mensagem:', error);
-        addMessageToChat('ai', 'Ocorreu um erro ao processar sua mensagem.');
-      } finally {
-        // Esconde o ícone de loading e habilita o botão de envio novamente
-        loadingIcon.style.display = 'none';
-        sendButton.disabled = false;
-      }
-    }
-
-    function addMessageToChat(sender, message) {
-      const chatBox = document.getElementById('chatBox');
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('chat-message', sender);
-      messageDiv.innerText = `${sender === 'user' ? 'Você' : 'AI'}: ${message}`;
-      chatBox.appendChild(messageDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     function accessUserPersonas() {
@@ -317,6 +255,63 @@
         sendMessage();
       }
     }
+
+    async function sendMessage() {
+      const messageInput = document.getElementById('userMessage');
+      const message = messageInput.value.trim();
+      const loadingIcon = document.getElementById('loadingIcon');
+      const sendButton = document.querySelector('button');
+
+      if (message === '' || selectedPersona === '') {
+        alert('Por favor, selecione uma persona e digite uma mensagem.');
+        return;
+      }
+
+      loadingIcon.style.display = 'inline-block';
+      sendButton.disabled = true;
+
+      addMessageToChat('Você', message);
+      messageInput.value = '';
+
+      const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
+
+      try {
+        const response = await fetch('/send-message-openai', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken
+          },
+          body: JSON.stringify({ persona: selectedPersona, message })
+        });
+
+        const data = await response.json();
+        if (data.reply) {
+          addMessageToChat(selectedPersona, data.reply); // Exibe o nome da persona que está respondendo
+        } else {
+          addMessageToChat(selectedPersona, 'Desculpe, não consegui processar sua mensagem.');
+        }
+      } catch (error) {
+        console.error('Erro ao enviar mensagem:', error);
+        addMessageToChat(selectedPersona, 'Ocorreu um erro ao processar sua mensagem.');
+      } finally {
+        loadingIcon.style.display = 'none';
+        sendButton.disabled = false;
+      }
+    }
+
+    function addMessageToChat(sender, message) {
+      const chatBox = document.getElementById('chatBox');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('chat-message', sender === 'Você' ? 'user' : 'ai');
+      messageDiv.innerText = `${sender}: ${message}`;
+      chatBox.appendChild(messageDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    window.onload = () => {
+      loadLoggedUser();
+    };
   </script>
 </body>
 </html>

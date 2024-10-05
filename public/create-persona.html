@@ -69,7 +69,7 @@
 </head>
 <body>
   <div class="background"></div>
-  <div class="overlay"></div>
+  <div class="overlay" id="overlay"></div>
 
   <div class="container">
     <h1>Criar Nova Persona</h1>
@@ -86,6 +86,10 @@
         <label for="personaImage" class="form-label">Imagem da Persona (URL ou Base64)</label>
         <input type="text" class="form-control" id="personaImage" placeholder="URL da imagem (opcional)">
       </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="personaPublic">
+        <label class="form-check-label" for="personaPublic">Tornar esta persona pública</label>
+      </div>
       <button type="button" class="btn btn-primary btn-create" onclick="createPersona()">Criar Persona</button>
     </form>
   </div>
@@ -99,10 +103,12 @@
       background.style.transform = `translate(${amountMovedX}px, ${amountMovedY}px) scale(1.05)`;
     });
 
+    // Função para criar uma nova persona
     async function createPersona() {
       const name = document.getElementById('personaName').value;
       const description = document.getElementById('personaDescription').value;
       const image = document.getElementById('personaImage').value || '/images/default.png'; // Define uma imagem padrão se o campo estiver vazio
+      const isPublic = document.getElementById('personaPublic').checked; // Verifica se a persona deve ser pública
 
       if (!name || !description) {
         alert('Por favor, preencha todos os campos obrigatórios.');
@@ -110,12 +116,16 @@
       }
 
       try {
+        // Obtendo o token CSRF do cookie
+        const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
+
         const response = await fetch('/create-persona', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken // Adicionando o token CSRF ao cabeçalho
           },
-          body: JSON.stringify({ name, description, image }),
+          body: JSON.stringify({ name, description, image, public: isPublic }), // Inclui o campo 'public'
         });
 
         const data = await response.json();
@@ -131,6 +141,11 @@
         alert('Erro ao criar persona.');
       }
     }
+
+    // Função para redirecionar quando clicar fora da caixa de criação de persona
+    document.getElementById('overlay').addEventListener('click', function() {
+      window.location.href = '/personas.html'; // Redireciona para a página personas.html
+    });
   </script>
 </body>
 </html>

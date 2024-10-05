@@ -72,6 +72,7 @@
             height: 45px;
             font-size: 18px;
             margin-bottom: 10px;
+            position: relative;
         }
 
         .forgot-password {
@@ -87,6 +88,25 @@
         .btn-login:hover, .btn-register:hover {
             background-color: #c3c3c3;
         }
+
+        /* Ícone de carregamento no botão */
+        .btn-login.disabled,
+        .btn-register.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .loading-icon {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            display: none;
+        }
+
+        .btn-login.loading .loading-icon,
+        .btn-register.loading .loading-icon {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -98,8 +118,12 @@
         <input type="text" class="form-control" id="username" placeholder="Usuário">
         <input type="password" class="form-control" id="password" placeholder="Senha">
         <input type="email" class="form-control email-field" id="email" placeholder="Email"> <!-- Campo de email oculto -->
-        <button class="btn btn-login" onclick="login()">LOGIN</button>
-        <button class="btn btn-register" onclick="toggleRegister()">CADASTRO</button>
+        <button class="btn btn-login" onclick="login()">LOGIN
+            <i class="fas fa-spinner fa-spin loading-icon"></i>
+        </button>
+        <button class="btn btn-register" onclick="toggleRegister()">CADASTRO
+            <i class="fas fa-spinner fa-spin loading-icon"></i>
+        </button>
         <div class="forgot-password">ESQUECI MINHA SENHA</div>
     </div>
 
@@ -133,15 +157,6 @@
             }
         }
 
-        // Função para buscar o token CSRF do servidor e armazenar em um cookie
-        async function fetchCsrfToken() {
-            const response = await fetch('/get-csrf-token');
-            const data = await response.json();
-            document.cookie = `XSRF-TOKEN=${data.csrfToken}; path=/;`;
-        }
-
-        window.onload = fetchCsrfToken; // Garante que o token CSRF seja obtido assim que a página carrega
-
         async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -151,6 +166,9 @@
                 alert('Por favor, preencha todos os campos de login.');
                 return;
             }
+
+            // Desabilita botão e exibe loading
+            toggleButtonLoading('btn-login', true);
 
             try {
                 const response = await fetch('/login', {
@@ -172,6 +190,8 @@
             } catch (error) {
                 console.error('Erro ao realizar o login:', error);
                 alert('Ocorreu um erro ao tentar fazer login.');
+            } finally {
+                toggleButtonLoading('btn-login', false);
             }
         }
 
@@ -185,6 +205,9 @@
                 alert('Por favor, preencha todos os campos para realizar o cadastro.');
                 return;
             }
+
+            // Desabilita botão e exibe loading
+            toggleButtonLoading('btn-register', true);
 
             try {
                 const response = await fetch('/register', {
@@ -206,6 +229,21 @@
             } catch (error) {
                 console.error('Erro ao realizar o cadastro:', error);
                 alert('Ocorreu um erro ao tentar realizar o cadastro.');
+            } finally {
+                toggleButtonLoading('btn-register', false);
+            }
+        }
+
+        // Função para alternar o estado de loading nos botões
+        function toggleButtonLoading(buttonClass, isLoading) {
+            const button = document.querySelector(`.${buttonClass}`);
+            const icon = button.querySelector('.loading-icon');
+            if (isLoading) {
+                button.classList.add('disabled', 'loading');
+                icon.style.display = 'block';
+            } else {
+                button.classList.remove('disabled', 'loading');
+                icon.style.display = 'none';
             }
         }
 

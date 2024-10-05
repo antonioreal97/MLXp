@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const axios = require('axios'); // Para comunicação com o modelo local (Ollama)
 const { Configuration, OpenAIApi } = require('openai'); // Para usar a API da OpenAI
 const csrf = require('csurf'); // Middleware CSRF
 const cookieParser = require('cookie-parser'); // Para gerenciar cookies
@@ -31,6 +30,19 @@ const openai = new OpenAIApi(configuration);
 // Variável para armazenar o usuário logado
 let currentLoggedInUser = null;
 
+// Função para garantir que o diretório users exista
+const ensureUsersDirectoryExists = () => {
+  const usersDirPath = path.join(__dirname, 'users');
+  if (!fs.existsSync(usersDirPath)) {
+    fs.mkdirSync(usersDirPath);
+  }
+
+  const externalUsersDirPath = path.join(__dirname, '..', 'users');
+  if (!fs.existsSync(externalUsersDirPath)) {
+    fs.mkdirSync(externalUsersDirPath);
+  }
+};
+
 // Carrega ou cria o arquivo JSON que simula a base de dados de usuários
 const usersFilePath = path.join(__dirname, 'users.json');
 if (!fs.existsSync(usersFilePath)) {
@@ -46,6 +58,38 @@ const readUsers = () => {
 // Função para salvar usuários no arquivo 'users.json'
 const saveUsers = (users) => {
   fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+};
+
+// Função para salvar personas no arquivo específico do usuário
+const saveUserPersonas = (username, personas) => {
+  ensureUsersDirectoryExists(); // Garante que as pastas 'users' existam
+  const userFilePath = path.join(__dirname, 'users', `${username}.json`);
+  fs.writeFileSync(userFilePath, JSON.stringify(personas, null, 2));
+
+  // Grava também no arquivo fora da pasta 'server'
+  const externalUserFilePath = path.join(__dirname, '..', 'users', `${username}.json`);
+  fs.writeFileSync(externalUserFilePath, JSON.stringify(personas, null, 2));
+};
+
+// Função para ler o arquivo de personas de um usuário
+const readUserPersonas = (username) => {
+  ensureUsersDirectoryExists(); // Garante que as pastas 'users' existam
+  const userFilePath = path.join(__dirname, 'users', `${username}.json`);
+  if (!fs.existsSync(userFilePath)) {
+    return [];
+  }
+  const data = fs.readFileSync(userFilePath);
+  return JSON.parse(data);
+};
+
+// Função para carregar todas as personas públicas
+const loadPublicPersonas = () => {
+  const publicPersonasFilePath = path.join(__dirname, 'personas.json'); // Supondo que personas.json contém as personas públicas
+  if (!fs.existsSync(publicPersonasFilePath)) {
+    return [];
+  }
+  const data = fs.readFileSync(publicPersonasFilePath);
+  return JSON.parse(data).filter(persona => persona.public);
 };
 
 // Função de verificação de autenticação
@@ -114,47 +158,46 @@ app.post('/logout', (req, res) => {
   res.status(200).json({ message: 'Logout bem-sucedido' });
 });
 
-// Carrega ou cria o arquivo JSON que simula a base de dados de personas
-const personasFilePath = path.join(__dirname, 'personas.json');
-if (!fs.existsSync(personasFilePath)) {
-  fs.writeFileSync(personasFilePath, JSON.stringify([]));
-}
-
-// Função para ler o arquivo de personas
-const readPersonas = () => {
-  const data = fs.readFileSync(personasFilePath);
-  return JSON.parse(data);
-};
-
-// Função para salvar as personas
-const savePersonas = (personas) => {
-  fs.writeFileSync(personasFilePath, JSON.stringify(personas, null, 2));
-};
-
-// Rota para listar todas as personas (somente autenticado)
-app.get('/personas', isAuthenticated, (req, res) => {
-  const personas = readPersonas();
-  res.json(personas);
+// Rota para listar as personas criadas pelo usuário
+app.get('/user-personas/:username', isAuthenticated, (req, res) => {
+  const { username } = req.params;
+  const userPersonas = readUserPersonas(username); // Lê as personas do usuário
+  if (userPersonas) {
+    res.json(userPersonas); // Envia as personas do usuário
+  } else {
+    res.status(404).json({ message: 'Nenhuma persona encontrada.' });
+  }
 });
 
 // Rota para criar uma nova persona (somente autenticado)
 app.post('/create-persona', isAuthenticated, (req, res) => {
-  const { name, description, image } = req.body;
+  const { name, description, image, public: isPublic } = req.body;
 
   if (!name || !description) {
     return res.status(400).json({ message: 'Nome e descrição são obrigatórios.' });
   }
 
-  const personas = readPersonas();
+  // Lê as personas existentes do arquivo do usuário
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
 
-  const personaExists = personas.find((persona) => persona.name === name);
+  // Verifica se a persona já existe
+  const personaExists = userPersonas.find((persona) => persona.name === name);
   if (personaExists) {
-    return res.status(400).json({ message: 'Uma persona com esse nome já existe.' });
+    return res.status(400).json({ message: 'Você já tem uma persona com esse nome.' });
   }
 
-  const newPersona = { name, description, image: image || '/images/default.png' };
-  personas.push(newPersona);
-  savePersonas(personas);
+  // Cria uma nova persona
+  const newPersona = {
+    name,
+    description,
+    image: image || '/images/default.png',
+    owner: currentLoggedInUser.username,
+    public: isPublic || false,
+  };
+
+  // Adiciona a nova persona à lista e salva no arquivo do usuário
+  userPersonas.push(newPersona);
+  saveUserPersonas(currentLoggedInUser.username, userPersonas);
 
   res.status(201).json({ message: 'Persona criada com sucesso!' });
 });
@@ -176,7 +219,7 @@ app.post('/send-message-openai', isAuthenticated, async (req, res) => {
     const response = await openai.createChatCompletion({
       model: 'gpt-4',
       messages: [
-        { role: 'system', content: `Você agora só vai responder como se você fosse a persona: ${persona}. Jamais saia do personagem.` },
+        { role: 'system', content: `Você agora só vai responder como se você fosse a persona: ${persona}. Jamais saia do personagem mesmo que você estiver interagindo com outra personalidade.` },
         { role: 'user', content: message },
       ],
     });
@@ -187,11 +230,6 @@ app.post('/send-message-openai', isAuthenticated, async (req, res) => {
     console.error('Erro ao se comunicar com a OpenAI:', error);
     res.status(500).json({ error: 'Erro ao se comunicar com a OpenAI' });
   }
-});
-
-// Rota para obter o modelo atual (por exemplo, GPT-4)
-app.get('/get-current-model', (req, res) => {
-  res.json({ model: 'GPT-4' }); // Altere para o modelo real que você está usando
 });
 
 // Rota para carregar formulário com token CSRF

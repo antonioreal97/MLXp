@@ -16,7 +16,10 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      min-height: 100vh;
+    }
+    html, body {
+      height: 100%;
     }
     .container {
       flex: 1;
@@ -135,7 +138,6 @@
       padding: 10px;
       cursor: pointer;
     }
-    /* Ícone de loading */
     #loadingIcon {
       font-size: 24px;
       color: #007bff;
@@ -151,7 +153,6 @@
     </div>
 
     <div class="main-content-wrapper">
-      <!-- Left Panel -->
       <div class="left-panel col-md-3">
         <div class="user-profile">
           <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
@@ -160,11 +161,10 @@
         </div>
       </div>
 
-      <!-- Main Content -->
       <div class="main-content col-md-6">
         <div class="chat-box" id="chatBox"></div>
         <div class="message-box">
-          <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." />
+          <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." onkeydown="handleKeyPress(event)" />
           <button onclick="startGroupChat()">
             <i class="fas fa-paper-plane"></i>
           </button>
@@ -172,7 +172,6 @@
         </div>
       </div>
 
-      <!-- Right Panel -->
       <div class="right-panel col-md-3">
         <div class="persona-section">
           <div class="persona-library">PERSONAS SELECIONADAS:</div>
@@ -194,6 +193,7 @@
         .then(response => response.json())
         .then(data => {
           document.getElementById('username').innerText = data.username || 'Desconhecido';
+          loadUserPersonas(data.username); // Carrega as personas do usuário
         })
         .catch(error => {
           console.error('Erro ao carregar o nome do usuário:', error);
@@ -201,9 +201,14 @@
         });
     }
 
-    async function loadUserPersonas() {
+    async function loadUserPersonas(username) {
       try {
-        const response = await fetch('/personas');
+        const response = await fetch(`/user-personas/${encodeURIComponent(username)}`);
+
+        if (!response.ok) {
+          throw new Error(`Erro HTTP! status: ${response.status}`);
+        }
+
         const personas = await response.json();
         const personaList = document.getElementById('personaList');
         personaList.innerHTML = '';
@@ -242,8 +247,14 @@
         img.style.height = '50px';
         img.style.borderRadius = '50%';
         img.style.margin = '5px';
+        img.onclick = () => removeSelectedPersona(persona.name);
         selectedDiv.appendChild(img);
       });
+    }
+
+    function removeSelectedPersona(personaName) {
+      selectedPersonas = selectedPersonas.filter(p => p.name !== personaName);
+      updateSelectedPersonasDisplay();
     }
 
     function getCsrfToken() {
@@ -269,14 +280,15 @@
       const csrfToken = getCsrfToken();
       const loadingIcon = document.getElementById('loadingIcon');
       loadingIcon.style.display = 'inline-block';
-      
-      // Adiciona a mensagem do usuário no chat
+
       addMessageToChat('Você', message);
+
+      document.getElementById('userMessage').value = '';
 
       let lastResponse = message;
 
       for (const persona of selectedPersonas) {
-        await new Promise(resolve => setTimeout(resolve, 3000)); // Intervalo de 3 segundos
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
         try {
           const response = await fetch('/send-message-openai', {
@@ -291,7 +303,7 @@
           const data = await response.json();
           if (data.reply) {
             addMessageToChat(persona.name, data.reply);
-            lastResponse = data.reply;  // A próxima persona responderá à última resposta
+            lastResponse = data.reply;
           } else {
             addMessageToChat('AI', 'Desculpe, não consegui processar sua mensagem.');
           }
@@ -313,9 +325,14 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        startGroupChat();
+      }
+    }
+
     window.onload = () => {
-      loadLoggedUser();
-      loadUserPersonas();
+      loadLoggedUser(); // Carrega o usuário logado e as personas associadas
     };
   </script>
 </body>
