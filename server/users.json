@@ -8,5 +8,10 @@
     "username": "ana",
     "password": "$2b$10$N8e1cGfPpM7zTo8UM3WmjOZyJ6ADM5GGCIbZus61CVL8NVSma5VGS",
     "email": "a@gmail.com"
+  },
+  {
+    "username": "honda",
+    "password": "$2b$10$UyQLs1AY9J0128l.D4xATespKZUbgzkXLVzFaWiFWN.j273msI4yS",
+    "email": "l@gmail.com"
   }
 ]

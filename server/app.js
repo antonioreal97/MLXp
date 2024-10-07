@@ -232,6 +232,58 @@ app.post('/send-message-openai', isAuthenticated, async (req, res) => {
   }
 });
 
+// Rota para atualizar uma persona existente
+app.post('/update-persona', isAuthenticated, (req, res) => {
+  const { originalName, name, description, image } = req.body;
+
+  if (!originalName || !name || !description) {
+    return res.status(400).json({ message: 'Nome e descrição são obrigatórios.' });
+  }
+
+  // Lê as personas do usuário logado
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
+
+  // Busca a persona a ser atualizada
+  const personaIndex = userPersonas.findIndex((persona) => persona.name === originalName);
+
+  if (personaIndex === -1) {
+    return res.status(404).json({ message: 'Persona não encontrada.' });
+  }
+
+  // Atualiza os dados da persona
+  userPersonas[personaIndex].name = name;
+  userPersonas[personaIndex].description = description;
+  userPersonas[personaIndex].image = image || '/images/default.png';
+
+  // Salva as personas atualizadas no arquivo do usuário
+  saveUserPersonas(currentLoggedInUser.username, userPersonas);
+
+  return res.status(200).json({ message: 'Persona atualizada com sucesso!' });
+});
+
+// Rota para alternar o status público/privado de uma persona
+app.post('/toggle-public-status', isAuthenticated, (req, res) => {
+  const { name, public: isPublic } = req.body;
+
+  // Lê as personas do usuário logado
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
+
+  // Busca a persona a ser atualizada
+  const personaIndex = userPersonas.findIndex((persona) => persona.name === name);
+
+  if (personaIndex === -1) {
+    return res.status(404).json({ message: 'Persona não encontrada.' });
+  }
+
+  // Atualiza o status público/privado da persona
+  userPersonas[personaIndex].public = isPublic;
+
+  // Salva as personas atualizadas no arquivo do usuário
+  saveUserPersonas(currentLoggedInUser.username, userPersonas);
+
+  return res.status(200).json({ message: 'Status da persona atualizado com sucesso!' });
+});
+
 // Rota para carregar formulário com token CSRF
 app.get('/get-csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
