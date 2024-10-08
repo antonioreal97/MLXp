@@ -143,6 +143,24 @@
       color: #007bff;
       display: none;
     }
+    .model-selector {
+      margin-top: 15px;
+      background-color: #007bff80;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .model-selector select {
+      background-color: #007bff80;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -157,8 +175,14 @@
         <div class="user-profile">
           <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
         </div>
-        <div class="persona-list" id="personaList">
+        <div class="model-selector">
+          <label for="modelSelect">Escolha o modelo:</label>
+          <select id="modelSelect" onchange="changeModel()">
+            <option value="gpt-4">GPT-4</option>
+            <option value="llama">LLaMA</option>
+          </select>
         </div>
+        <div class="persona-list" id="personaList"></div>
       </div>
 
       <div class="main-content col-md-6">
@@ -183,6 +207,7 @@
 
   <script>
     let selectedPersonas = [];
+    let currentModel = 'llama'; // Modelo padrão inicial
 
     function goBack() {
       window.location.href = '/user-personas.html';
@@ -257,12 +282,9 @@
       updateSelectedPersonasDisplay();
     }
 
-    function getCsrfToken() {
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
-      return csrfToken;
+    function changeModel() {
+      const modelSelect = document.getElementById('modelSelect');
+      currentModel = modelSelect.value === 'gpt-4' ? 'gpt-4' : 'llama';
     }
 
     async function startGroupChat() {
@@ -277,7 +299,7 @@
         return;
       }
 
-      const csrfToken = getCsrfToken();
+      const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
       const loadingIcon = document.getElementById('loadingIcon');
       loadingIcon.style.display = 'inline-block';
 
@@ -291,7 +313,7 @@
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         try {
-          const response = await fetch('/send-message-openai', {
+          const response = await fetch(`/send-message-${currentModel}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

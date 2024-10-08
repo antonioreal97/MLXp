@@ -211,6 +211,24 @@
     .edit-personas-btn:hover {
       background-color: #0056b3;
     }
+    .model-selector {
+      margin-top: 15px;
+      background-color: #007bff80;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .model-selector select {
+      background-color: #007bff80;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -226,6 +244,13 @@
           <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
         </div>
         <div class="persona-list" id="personaList">
+        </div>
+        <div class="model-selector">
+          <label for="modelSelect">Escolha o modelo:</label>
+          <select id="modelSelect" onchange="changeModel()">
+            <option value="gpt-4">GPT-4</option>
+            <option value="llama">LLaMA</option>
+          </select>
         </div>
         <button class="edit-personas-btn" onclick="redirectToEdit()">Editar Personas</button>
         <a href="/group-chat.html" class="group-chat-btn">Group Chat</a>
@@ -256,6 +281,7 @@
 
   <script>
     let selectedPersona = '';
+    let currentModel = 'llama'; // Modelo padrão inicial
 
     function loadLoggedUser() {
       fetch('/get-logged-user')
@@ -304,12 +330,9 @@
       }, 1000);
     }
 
-    function getCsrfToken() {
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
-      return csrfToken;
+    function changeModel() {
+      const modelSelect = document.getElementById('modelSelect');
+      currentModel = modelSelect.value === 'gpt-4' ? 'gpt-4' : 'llama';
     }
 
     async function sendMessage() {
@@ -317,7 +340,7 @@
       const message = messageInput.value.trim();
       const sendButton = document.getElementById('sendButton');
       const loadingIcon = document.getElementById('loadingIcon');
-      const csrfToken = getCsrfToken();
+      const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
 
       if (message === '' || selectedPersona === '') {
         alert('Por favor, selecione uma persona e digite uma mensagem.');
@@ -331,7 +354,7 @@
       sendButton.disabled = true;
 
       try {
-        const response = await fetch('/send-message-openai', {
+        const response = await fetch(`/send-message-${currentModel}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

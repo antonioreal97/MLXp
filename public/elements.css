@@ -340,3 +340,25 @@ body, html {
     background-color: #0056b3;
   }
   
+  /* Estilos específicos para group-chat.html */
+  .chat-box {
+    background-color: rgba(224, 224, 224, 0.381);
+  }
+  
+  .persona-list img {
+    border: 2px solid #007bffa0;
+  }
+  
+  .persona-list img.selected {
+    border-color: #28a74692;
+  }
+  
+  .main-content-wrapper {
+    padding: 10px;
+    overflow-y: auto;
+  }
+  
+  .message-box button {
+    background-color: rgba(169, 169, 169, 0.316);
+  }
+  

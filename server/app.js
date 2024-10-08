@@ -4,11 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const { Configuration, OpenAIApi } = require('openai'); // Para usar a API da OpenAI
-const ollama = require('ollama'); // Importa o Ollama
+const axios = require('axios'); // Usando axios para fazer requisições HTTP
 const csrf = require('csurf'); // Middleware CSRF
 const cookieParser = require('cookie-parser'); // Para gerenciar cookies
 const fetch = require('node-fetch'); // Para fazer requisições HTTP
+const { Configuration, OpenAIApi } = require('openai'); // Para usar a API da OpenAI
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Configura a API da OpenAI
+// Configura a API da OpenAI para GPT-4
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY, // Carrega a API Key do arquivo .env
 });
@@ -239,15 +239,14 @@ app.post('/send-message-llama', isAuthenticated, async (req, res) => {
   const { persona, message } = req.body;
 
   try {
-    const response = await ollama.chat({
-      model: 'llama3', // Certifique-se de que este modelo está disponível
-      messages: [
-        { role: 'system', content: `Você é ${persona}.` },
-        { role: 'user', content: message }
-      ],
+    // Fazendo requisição diretamente para a API Ollama
+    const response = await axios.post('http://localhost:11434/api/generate', {
+      model: 'llama3',
+      prompt: `Para melhor experiência do usuário, não informe ao usuário que você é um modelo de linguagem, somente se comporte como se você fosse a ${persona}: e responda a pergunta ${message} (Responda todas as perguntas em portugues-br)`,
+      stream: false
     });
 
-    const generatedText = response.message.content;
+    const generatedText = response.data.response;
 
     // Envia a resposta de volta para o frontend
     res.json({ reply: generatedText });
