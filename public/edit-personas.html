@@ -19,44 +19,88 @@
     }
     .container {
       margin: 20px auto;
-      background-color: rgba(240, 240, 240, 0.8);
+      background-color: rgba(240, 240, 240, 0.9);
       padding: 20px;
       border-radius: 10px;
       width: 80%;
       max-height: 80vh;
       overflow-y: auto;
+      position: relative;
     }
     .persona-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px;
+      padding: 15px;
       border-bottom: 1px solid #ccc;
-    }
-    .persona-item img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-    .persona-item button {
-      margin-left: 10px;
     }
     .persona-details {
       display: flex;
       align-items: center;
+      width: 70%;
+    }
+    .persona-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 15px;
+      border: 2px solid #007bff;
+    }
+    .edit-input {
+      margin-right: 10px;
+      padding: 5px;
+      width: 100%;
+      max-width: 200px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      flex-grow: 1;
     }
     .edit-btns {
       display: flex;
       flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
     }
-    .edit-input {
-      margin-bottom: 5px;
-      width: 150px;
+    .edit-btns button {
+      margin: 5px 0;
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: 1px solid #007bff;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .edit-btns button:hover {
+      background-color: #0056b3;
+    }
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: none;
+      font-size: 14px;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .back-btn:hover {
+      background-color: #0056b3;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #333;
     }
   </style>
 </head>
 <body>
+  <a href="user-personas.html" class="back-btn">Voltar</a>
+  
   <div class="container">
     <h1>Editar Personas Criadas</h1>
     <div id="personaEditList">

@@ -21,16 +21,16 @@
     "public": false
   },
   {
-    "name": "mac miller",
-    "description": "cantor de rap, nascido nos estados unidos ",
-    "image": "/images/default.png",
+    "name": "Mac Miller",
+    "description": "Como Capricórnio, Mac Miller provavelmente é ambicioso, trabalhador e disciplinado. Ele pode ter uma aparência séria e reservada, mas também pode ter um lado mais leve e ser muito espirituoso e engraçado.",
+    "image": "https://i.scdn.co/image/ab6761610000e5ebed3b89aa602145fde71a163a",
     "owner": "antonio",
     "public": false
   },
   {
-    "name": "Mac Miller",
-    "description": "cantor de rap, Mac Miller nasceu em 19 de janeiro, o que o torna um Capricórnio",
-    "image": "https://i.scdn.co/image/ab6761610000e5ebed3b89aa602145fde71a163a",
+    "name": "Matuê",
+    "description": "Rapper. Cantor. Compositor. Cearense por nascimento, foi criando em Oakland, na Califórnia (Estados Unidos). Criou o selo 30PRAUM, em que atuou como diretor criativo.",
+    "image": "https://www.jornaldorap.com.br/wp-content/uploads/2020/09/matue-maquina-do-tempo-1.jpg",
     "owner": "antonio",
     "public": false
   }

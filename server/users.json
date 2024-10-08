@@ -13,5 +13,10 @@
     "username": "honda",
     "password": "$2b$10$UyQLs1AY9J0128l.D4xATespKZUbgzkXLVzFaWiFWN.j273msI4yS",
     "email": "l@gmail.com"
+  },
+  {
+    "username": "joao",
+    "password": "$2b$10$eM44vE/I0MabzPTiXBv06u6KHRJtzYMz00ahcQknAABKsSJqMcAXm",
+    "email": "j@gmail.com"
   }
 ]

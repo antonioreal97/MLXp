@@ -5,8 +5,10 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const { Configuration, OpenAIApi } = require('openai'); // Para usar a API da OpenAI
+const ollama = require('ollama'); // Importa o Ollama
 const csrf = require('csurf'); // Middleware CSRF
 const cookieParser = require('cookie-parser'); // Para gerenciar cookies
+const fetch = require('node-fetch'); // Para fazer requisições HTTP
 
 const app = express();
 
@@ -212,7 +214,7 @@ app.get('/get-logged-user', (req, res) => {
 });
 
 // Rota para enviar mensagens para a OpenAI (GPT-4)
-app.post('/send-message-openai', isAuthenticated, async (req, res) => {
+app.post('/send-message-gpt-4', isAuthenticated, async (req, res) => {
   const { persona, message } = req.body;
 
   try {
@@ -232,56 +234,27 @@ app.post('/send-message-openai', isAuthenticated, async (req, res) => {
   }
 });
 
-// Rota para atualizar uma persona existente
-app.post('/update-persona', isAuthenticated, (req, res) => {
-  const { originalName, name, description, image } = req.body;
+// Rota para enviar mensagens para o LLaMA rodando localmente
+app.post('/send-message-llama', isAuthenticated, async (req, res) => {
+  const { persona, message } = req.body;
 
-  if (!originalName || !name || !description) {
-    return res.status(400).json({ message: 'Nome e descrição são obrigatórios.' });
+  try {
+    const response = await ollama.chat({
+      model: 'llama3', // Certifique-se de que este modelo está disponível
+      messages: [
+        { role: 'system', content: `Você é ${persona}.` },
+        { role: 'user', content: message }
+      ],
+    });
+
+    const generatedText = response.message.content;
+
+    // Envia a resposta de volta para o frontend
+    res.json({ reply: generatedText });
+  } catch (error) {
+    console.error('Erro ao se comunicar com o Ollama/LLaMA:', error);
+    res.status(500).json({ error: 'Erro ao se comunicar com o Ollama/LLaMA' });
   }
-
-  // Lê as personas do usuário logado
-  const userPersonas = readUserPersonas(currentLoggedInUser.username);
-
-  // Busca a persona a ser atualizada
-  const personaIndex = userPersonas.findIndex((persona) => persona.name === originalName);
-
-  if (personaIndex === -1) {
-    return res.status(404).json({ message: 'Persona não encontrada.' });
-  }
-
-  // Atualiza os dados da persona
-  userPersonas[personaIndex].name = name;
-  userPersonas[personaIndex].description = description;
-  userPersonas[personaIndex].image = image || '/images/default.png';
-
-  // Salva as personas atualizadas no arquivo do usuário
-  saveUserPersonas(currentLoggedInUser.username, userPersonas);
-
-  return res.status(200).json({ message: 'Persona atualizada com sucesso!' });
-});
-
-// Rota para alternar o status público/privado de uma persona
-app.post('/toggle-public-status', isAuthenticated, (req, res) => {
-  const { name, public: isPublic } = req.body;
-
-  // Lê as personas do usuário logado
-  const userPersonas = readUserPersonas(currentLoggedInUser.username);
-
-  // Busca a persona a ser atualizada
-  const personaIndex = userPersonas.findIndex((persona) => persona.name === name);
-
-  if (personaIndex === -1) {
-    return res.status(404).json({ message: 'Persona não encontrada.' });
-  }
-
-  // Atualiza o status público/privado da persona
-  userPersonas[personaIndex].public = isPublic;
-
-  // Salva as personas atualizadas no arquivo do usuário
-  saveUserPersonas(currentLoggedInUser.username, userPersonas);
-
-  return res.status(200).json({ message: 'Status da persona atualizado com sucesso!' });
 });
 
 // Rota para carregar formulário com token CSRF

@@ -22,10 +22,10 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: #c0c0c063;
+      background-color: #c0c0c03b;
     }
     .header {
-      background-color: rgba(211, 211, 211, 0.384);
+      background-color: rgba(211, 211, 211, 0.193);
       padding: 10px;
       text-align: center;
       font-weight: bold;
@@ -39,7 +39,7 @@
       overflow-y: auto;
     }
     .left-panel, .right-panel {
-      background-color: rgba(211, 211, 211, 0.397);
+      background-color: rgba(211, 211, 211, 0.207);
       padding: 10px;
     }
     .left-panel {
@@ -49,14 +49,14 @@
       width: 20%;
     }
     .main-content {
-      background-color: rgba(211, 211, 211, 0.39);
+      background-color: rgba(211, 211, 211, 0.212);
       padding: 10px;
       width: 60%;
       display: flex;
       flex-direction: column;
     }
     .user-profile, .persona-library, .persona-list {
-      background-color: rgba(169, 169, 169, 0.384);
+      background-color: rgba(169, 169, 169, 0.184);
       margin-bottom: 10px;
       padding: 10px;
     }
@@ -68,7 +68,7 @@
       background-color: transparent;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #007bffbe;
+      border: 2px solid #007bff7f;
       transition: transform 0.3s ease;
     }
     .persona-list img:hover {
@@ -84,7 +84,7 @@
     .chat-box {
       flex: 1;
       overflow-y: auto;
-      background-color: rgba(224, 224, 224, 0.404);
+      background-color: rgba(224, 224, 224, 0.31);
       padding: 10px;
       border-radius: 5px;
       margin-bottom: 10px;
@@ -102,7 +102,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background-color: rgba(169, 169, 169, 0.295);
+      background-color: rgba(169, 169, 169, 0.222);
       padding: 10px;
     }
     .message-box input {
@@ -113,7 +113,7 @@
       margin-right: 10px;
     }
     .message-box button {
-      background-color: rgba(169, 169, 169, 0.411);
+      background-color: rgba(169, 169, 169, 0.273);
       border: none;
       padding: 10px;
       cursor: pointer;
@@ -122,7 +122,7 @@
     .btn-create-persona {
       width: 100%;
       padding: 15px;
-      background-color: #007bffc9;
+      background-color: #007bff80;
       color: white;
       text-align: center;
       font-weight: bold;
@@ -132,12 +132,12 @@
     }
     .btn-access-personas:hover,
     .btn-create-persona:hover {
-      background-color: #0057b3cb;
+      background-color: #0057b38d;
     }
     /* Ícone de loading */
     #loadingIcon {
       font-size: 20px;
-      color: #007bff;
+      color: #007bffbf;
       display: none;
       margin-left: 10px;
     }
@@ -153,6 +153,25 @@
     .message-box button:active i {
       animation: rotate 0.5s ease-in-out;
     }
+    /* Estilo do seletor de modelo */
+    .model-selector {
+      margin-top: 15px;
+      background-color: #007bff80;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .model-selector select {
+      background-color: #007bff80;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -164,7 +183,16 @@
         <div class="user-profile">
           <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
         </div>
-        <div class="persona-library">LLM: <span id="model-name">GPT-4</span></div>
+        <div class="persona-library">LLM: 
+          <span id="model-name">llama3</span> <!-- Nome do modelo exibido llama3 ou gpt-4-->
+        </div>
+        <div class="model-selector">
+          <label for="modelSelect">Escolha o modelo:</label>
+          <select id="modelSelect" onchange="changeModel()">
+            <option value="gpt-4">GPT-4</option>
+            <option value="llama">LLaMA</option>
+          </select>
+        </div>
         <div class="persona-library">BIBLIOTECA DE PERSONAS</div>
         <div id="personaList" class="persona-list"></div> <!-- Lista de personas será inserida aqui -->
         <div class="btn-access-personas" onclick="accessUserPersonas()">Acessar Personas Criadas</div>
@@ -193,6 +221,7 @@
   <script>
     let selectedPersona = '';
     const defaultPersonaImage = 'images/persona-main.png';
+    let currentModel = 'llama3'; // Modelo atual (GPT-4 ou LLaMA)
 
     function loadLoggedUser() {
       fetch('/get-logged-user')
@@ -256,6 +285,12 @@
       }
     }
 
+    function changeModel() {
+      const modelSelect = document.getElementById('modelSelect');
+      currentModel = modelSelect.value;
+      document.getElementById('model-name').innerText = modelSelect.options[modelSelect.selectedIndex].text;
+    }
+
     async function sendMessage() {
       const messageInput = document.getElementById('userMessage');
       const message = messageInput.value.trim();
@@ -276,7 +311,7 @@
       const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
 
       try {
-        const response = await fetch('/send-message-openai', {
+        const response = await fetch(`/send-message-${currentModel}`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
