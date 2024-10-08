@@ -5,98 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Editar Personas</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-image: url('images/fundo2.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    .container {
-      margin: 20px auto;
-      background-color: rgba(240, 240, 240, 0.9);
-      padding: 20px;
-      border-radius: 10px;
-      width: 80%;
-      max-height: 80vh;
-      overflow-y: auto;
-      position: relative;
-    }
-    .persona-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px;
-      border-bottom: 1px solid #ccc;
-    }
-    .persona-details {
-      display: flex;
-      align-items: center;
-      width: 70%;
-    }
-    .persona-item img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      margin-right: 15px;
-      border: 2px solid #007bff;
-    }
-    .edit-input {
-      margin-right: 10px;
-      padding: 5px;
-      width: 100%;
-      max-width: 200px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      flex-grow: 1;
-    }
-    .edit-btns {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: space-between;
-    }
-    .edit-btns button {
-      margin: 5px 0;
-      padding: 8px 15px;
-      border-radius: 5px;
-      border: 1px solid #007bff;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-    }
-    .edit-btns button:hover {
-      background-color: #0056b3;
-    }
-    .back-btn {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      border: none;
-      font-size: 14px;
-      text-transform: uppercase;
-      text-decoration: none;
-    }
-    .back-btn:hover {
-      background-color: #0056b3;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-weight: bold;
-      color: #333;
-    }
-  </style>
+  <link href="edit-personas.css" rel="stylesheet"> <!-- Referência ao arquivo CSS externo -->
 </head>
 <body>
   <a href="user-personas.html" class="back-btn">Voltar</a>
@@ -158,6 +67,7 @@
               <button onclick="togglePublicStatus('${persona.name}', ${persona.public})">
                 ${persona.public ? 'Tornar Privado' : 'Tornar Público'}
               </button>
+              <button onclick="deletePersona('${persona.name}')">Excluir</button> <!-- Botão para excluir -->
             </div>
           `;
           personaEditList.appendChild(personaDiv);
@@ -222,6 +132,35 @@
         }
       } catch (error) {
         console.error('Erro ao atualizar status da persona:', error);
+      }
+    }
+
+    // Função para excluir uma persona
+    async function deletePersona(personaName) {
+      const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
+
+      const confirmation = confirm(`Tem certeza que deseja excluir a persona "${personaName}"?`);
+      if (!confirmation) return;
+
+      try {
+        const response = await fetch('/delete-persona', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken
+          },
+          body: JSON.stringify({ name: personaName })
+        });
+
+        if (response.ok) {
+          alert('Persona excluída com sucesso!');
+          loadUserPersonasForEdit(); // Recarrega a lista após a exclusão
+        } else {
+          const data = await response.json();
+          alert('Erro ao excluir persona: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Erro ao excluir persona:', error);
       }
     }
 

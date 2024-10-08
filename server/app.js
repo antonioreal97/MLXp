@@ -256,6 +256,35 @@ app.post('/send-message-llama', isAuthenticated, async (req, res) => {
   }
 });
 
+// Rota para excluir uma persona
+app.delete('/delete-persona', isAuthenticated, async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: 'Nome da persona não fornecido' });
+  }
+
+  try {
+    const userPersonas = readUserPersonas(currentLoggedInUser.username);
+
+    const personaIndex = userPersonas.findIndex((persona) => persona.name === name);
+    if (personaIndex === -1) {
+      return res.status(404).json({ message: 'Persona não encontrada.' });
+    }
+
+    // Remove a persona
+    userPersonas.splice(personaIndex, 1);
+
+    // Salva a nova lista de personas
+    saveUserPersonas(currentLoggedInUser.username, userPersonas);
+
+    res.status(200).json({ message: 'Persona excluída com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao excluir persona:', error);
+    res.status(500).json({ message: 'Erro ao excluir persona.' });
+  }
+});
+
 // Rota para carregar formulário com token CSRF
 app.get('/get-csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });

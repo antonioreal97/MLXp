@@ -2,7 +2,7 @@ body {
     background-image: url('images/fundo2.png');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     margin: 0;
     padding: 0;
     display: flex;

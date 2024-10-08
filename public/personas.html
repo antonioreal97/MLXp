@@ -18,13 +18,13 @@
           <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
         </div>
         <div class="persona-library">LLM: 
-          <span id="model-name">llama3</span> <!-- Nome do modelo exibido llama3 ou gpt-4-->
+          <span id="model-name">llama</span> <!-- Nome do modelo exibido llama ou gpt-4 -->
         </div>
         <div class="model-selector">
           <label for="modelSelect">Escolha o modelo:</label>
           <select id="modelSelect" onchange="changeModel()">
             <option value="gpt-4">GPT-4</option>
-            <option value="llama">LLaMA</option>
+            <option value="llama3">LLAMA3</option>
           </select>
         </div>
         <div class="persona-library">BIBLIOTECA DE PERSONAS</div>
@@ -55,7 +55,7 @@
   <script>
     let selectedPersona = '';
     const defaultPersonaImage = 'images/persona-main.png';
-    let currentModel = 'llama3'; // Modelo inicial (GPT-4 ou LLaMA)
+    let currentModel = 'llama'; // Modelo inicial definido corretamente como 'llama' ou 'gpt-4'
 
     function loadLoggedUser() {
       fetch('/get-logged-user')
@@ -121,7 +121,7 @@
 
     function changeModel() {
       const modelSelect = document.getElementById('modelSelect');
-      currentModel = modelSelect.value === 'gpt-4' ? 'gpt-4' : 'llama';
+      currentModel = modelSelect.value === 'gpt-4' ? 'gpt-4' : 'llama'; // Certifica que 'llama' é o valor para LLaMA
       document.getElementById('model-name').innerText = modelSelect.options[modelSelect.selectedIndex].text;
     }
 

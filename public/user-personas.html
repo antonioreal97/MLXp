@@ -26,7 +26,7 @@
           <label for="modelSelect">Escolha o modelo:</label>
           <select id="modelSelect" onchange="changeModel()">
             <option value="gpt-4">GPT-4</option>
-            <option value="llama">LLaMA</option>
+            <option value="llama">LLAMA3</option>
           </select>
         </div>
         <button class="edit-personas-btn" onclick="redirectToEdit()">Editar Personas</button>
@@ -58,7 +58,7 @@
 
   <script>
     let selectedPersona = '';
-    let currentModel = 'llama'; // Modelo padrão inicial
+    let currentModel = 'llama3'; // Modelo padrão inicial
 
     function loadLoggedUser() {
       fetch('/get-logged-user')
