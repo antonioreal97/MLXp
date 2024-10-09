@@ -42,14 +42,39 @@
 
         .content {
             position: relative;
-            top: 50%;
+            top: 35%; /* Ajusta a posição do conteúdo */
             transform: translateY(-50%);
             z-index: 3; /* Conteúdo acima da overlay */
+        }
+
+        .logo {
+            width: 400px; /* Tamanho da logo */
+            margin-bottom: 1px; /* Espaço reduzido entre a logo e o título */
+            animation: float 10s ease-in-out infinite; /* Efeito circular */
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0px, 0px);
+            }
+            25% {
+                transform: translate(15px, -10px);
+            }
+            50% {
+                transform: translate(0px, -20px);
+            }
+            75% {
+                transform: translate(-15px, -10px);
+            }
+            100% {
+                transform: translate(0px, 0px);
+            }
         }
 
         .title {
             font-size: 4em;
             font-weight: bold;
+            margin-top: -20px; /* Aproxima o título da logo */
         }
 
         .title span {
@@ -104,6 +129,7 @@
     </div>
 
     <div class="content">
+        <img src="images/logomlx.png" alt="Logo ML Xperience" class="logo">
         <div class="title"><span>ML</span> Xperience</div>
         <div class="subtitle">Converse com nossas personalidades ou crie a sua própria!</div>
     </div>

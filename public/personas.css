@@ -9,7 +9,7 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow-x: hidden; /* Disable horizontal scrollbar */
-  overflow-y: auto;  /* Keep vertical scrollbar */
+  overflow-y: hidden;  /* Disable vertical scrollbar */
 }
 
 .container {
@@ -31,16 +31,17 @@ body {
 .main-content-wrapper {
   flex: 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;  /* Ensure content doesn't wrap */
   padding: 10px;
-  height: 100%;
-  overflow-y: auto;  /* Keep vertical scrollbar */
-  position: relative; /* Position for parallax effect */
+  height: calc(100% - 60px); /* Adjust to ensure full height with header */
+  overflow: hidden;  /* Disable scroll in main wrapper */
 }
 
 .left-panel, .right-panel {
   background-color: rgba(211, 211, 211, 0.207);
   padding: 10px;
+  height: 100%;  /* Ensure panel occupies full height */
+  overflow-y: auto;  /* Scroll for content inside */
 }
 
 .left-panel {
@@ -84,9 +85,9 @@ body {
 
 .persona-section img {
   width: 100%;
-  height: 150px;
+  height: 185px;
   margin-bottom: 20px;
-  border-radius: 50%;
+  border-radius: 150%;
   object-fit: cover;
 }
 
@@ -118,6 +119,7 @@ body {
   justify-content: space-between;
   background-color: rgba(169, 169, 169, 0.222);
   padding: 10px;
+  width: 100%;
 }
 
 .message-box input {
@@ -210,10 +212,10 @@ body {
 /* Efeito Parallax */
 .main-content-wrapper {
   background-image: url('images/fundo2.png'); /* Aplique a sua imagem de fundo */
-  background-attachment: scroll; /* Faz a imagem de fundo ficar fixa enquanto o conteúdo rola */
+  background-attachment: fixed; /* Faz a imagem de fundo ficar fixa enquanto o conteúdo rola */
   background-size: cover; /* Tamanho da imagem de fundo cobre toda a área */
   background-position: center; /* Centraliza a imagem de fundo */
-  background-repeat: repeat; /* A imagem não se repete */
+  background-repeat: no-repeat; /* A imagem não se repete */
 }
 
 /* Hide scrollbar */
