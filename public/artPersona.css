@@ -1,0 +1,140 @@
+body {
+    background-image: url('images/fundo2.png'); /* Imagem de fundo */
+    background-size: cover; /* Garante que a imagem cubra todo o fundo */
+    background-position: center; /* Centraliza a imagem de fundo */
+    background-attachment: fixed; /* Faz a imagem ficar fixa ao rolar a página */
+    background-repeat: no-repeat; /* Não repete a imagem */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .header {
+    background-color: rgba(42, 75, 92, 0.8); /* Cor da barra de título */
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1); /* Linha sutil abaixo */
+  }
+  
+  .main-content-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  .left-panel, .right-panel {
+    background-color: rgba(42, 75, 92, 0.8); /* Cor de fundo da barra lateral */
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .left-panel {
+    flex: 1;
+    max-width: 250px;
+  }
+  
+  .right-panel {
+    flex: 1;
+    max-width: 250px;
+  }
+  
+  .main-content {
+    flex: 2;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+  }
+  
+  .user-profile {
+    margin-bottom: 20px;
+    font-size: 18px;
+    text-align: center;
+  }
+  
+  .btn-access-personas {
+    text-align: center;
+  }
+  
+  .btn-access-personas button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .btn-access-personas button:hover {
+    background-color: #0056b3;
+  }
+  
+  .image-generator h5 {
+    font-weight: bold;
+    color: #0056b3;
+  }
+  
+  .image-generator input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .image-generator button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .image-generator button:hover {
+    background-color: #218838;
+  }
+  
+  #generatedImage img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Para telas pequenas */
+  @media only screen and (max-width: 768px) {
+    .main-content-wrapper {
+      flex-direction: column;
+    }
+  
+    .left-panel, .right-panel {
+      max-width: 100%;
+      margin-bottom: 20px;
+    }
+  
+    .main-content {
+      max-width: 100%;
+    }
+  }
+  

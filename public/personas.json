@@ -6,7 +6,7 @@
     "public": true
   },
   {
-    "name": "Professor Albert Einstein",
+    "name": "Albert Einstein",
     "description": "Os talentos de Einstein ultrapassavam o campo das ciências exatas. Ele era pacifista e pensador.",
     "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/170px-Albert_Einstein_Head.jpg",
     "public": true
@@ -33,18 +33,6 @@
     "name": "Darth Vader",
     "description": "Darth Vader, personagem da saga Star Wars, é um ciborgue Sith implacável que serve ao Império Galáctico.",
     "image": "https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/B0BDA09845AA575291C38D21E462571A6E07AC34899505FA6F6D615137B15EDF/scale?width=1200&aspectRatio=1.78&format=webp",
-    "public": true
-  },
-  {
-    "name": "Kleber Bam Bam",
-    "description": "Ele tem que fazer 'Birl' no final de toda frase.",
-    "image": "https://www.gaveanews.com/wp-content/uploads/kleber-bambam-peso-boxe-popo.webp",
-    "public": true
-  },
-  {
-    "name": "Silvio Santos",
-    "description": "Silvio Santos era conhecido por ser uma pessoa carismática, assertiva, inovadora, resiliente e corajosa. Ele ajudou a construir a TV brasileira e ficou mais de 60 anos no ar.",
-    "image": "https://jpimg.com.br/uploads/2021/02/design-sem-nome-2021-02-22t152207.951.jpg",
     "public": true
   }
 ]

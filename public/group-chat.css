@@ -2,62 +2,202 @@ body {
   background-image: url('images/fundo2.png');
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   background-repeat: no-repeat;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  overflow-x: hidden; /* Disable horizontal scrollbar */
-  overflow-y: auto;  /* Enable vertical scrollbar */
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 html, body {
   height: 100%;
 }
 
-.container {
+.container-fluid {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: rgba(192, 192, 192, 0.193);
   height: 100%;
 }
 
-.header {
-  background-color: rgba(211, 211, 211, 0.238);
-  padding: 10px;
-  text-align: center;
+.sidebar {
+  background-color: rgba(42, 75, 92, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+  color: white;
+}
+
+.sidebar h5 {
   font-weight: bold;
-  font-size: 24px;
-  position: relative;
 }
 
-.back-btn {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #007bff9a;
-  color: rgba(255, 255, 255, 0.53);
-  border: none;
-  padding: 5px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
+.sidebar .btn {
+  width: 100%;
+  margin-bottom: 10px;
 }
 
-.back-btn:hover {
-  background-color: #0057b384;
+.persona-btn {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
 }
 
-.main-content-wrapper {
+.persona-btn:hover {
+  background-color: #004494;
+}
+
+.main-content {
   flex: 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  margin: 20px;
+}
+
+.main-content .logo {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.main-content .logo h1 {
+  font-size: 3rem;
+  color: #0056b3;
+}
+
+.main-content .logo h1 span {
+  color: white;
+}
+
+/* Área do chat */
+.chat-box {
+  flex-grow: 1; /* Permite que o chat cresça */
+  background-color: rgba(74, 74, 74, 0.945);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px;
+  overflow-y: auto; /* Permite rolar verticalmente */
+  max-height: 70vh; /* Define a altura máxima antes de ativar o scroll */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Estilo de mensagens */
+.message {
+  margin-bottom: 10px;
   padding: 10px;
-  overflow-y: auto;  /* Keep vertical scrollbar */
-  position: relative;
+  border-radius: 10px;
+  word-wrap: break-word;
+}
+
+/* Cores diferentes para cada persona */
+.message.cristiano {
+  background-color: rgba(255, 215, 0, 0.2); /* Amarelo claro */
+  color: #d4af37;
+}
+
+.message.michael {
+  background-color: rgba(0, 123, 255, 0.2); /* Azul claro */
+  color: #007bff;
+}
+
+.message.messi {
+  background-color: rgba(0, 255, 127, 0.2); /* Verde claro */
+  color: #00ff7f;
+}
+
+.message.mac {
+  background-color: rgba(255, 105, 180, 0.2); /* Rosa claro */
+  color: #ff69b4;
+}
+
+/* Mensagens do usuário */
+.message.user {
+  text-align: right;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.main-content .message-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.575);
+  border-radius: 20px;
+  margin: 20px;
+}
+
+.main-content .message-input input {
+  border: none;
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.main-content .message-input button {
+  background: none;
+  border: none;
+  color: #0056b3;
+  font-size: 1.5rem;
+  margin-left: 10px;
+}
+
+.persona-selected {
+  background-color: rgba(74, 74, 74, 0.8);
+  color: white;
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+}
+
+.persona-selected .persona-img {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+
+.persona-selected .persona-img {
+  background-size: cover;
+  background-position: center;
+}
+
+.model-selector {
+  margin-top: 15px;
+  background-color: #007bff80;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.model-selector select {
+  background-color: #007bff80;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
 }
 
 .left-panel, .right-panel {
@@ -65,27 +205,8 @@ html, body {
   padding: 10px;
 }
 
-.left-panel {
-  width: 20%;
-}
-
-.right-panel {
-  width: 20%;
-}
-
-.main-content {
-  background-color: rgba(211, 211, 211, 0.301);
-  padding: 10px;
-  width: 60%;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.user-profile {
-  background-color: rgba(169, 169, 169, 0.263);
-  margin-bottom: 10px;
-  padding: 10px;
+.left-panel, .main-content, .right-panel {
+  margin-bottom: 20px;
 }
 
 .persona-list img {
@@ -104,122 +225,21 @@ html, body {
   transform: scale(1.1);
 }
 
-.selected {
-  border-color: #28a74692;
-}
-
-.persona-section img {
-  width: 100%;
-  height: 150px;
-  margin-bottom: 20px;
+#selectedPersonas img {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  object-fit: cover;
-}
-
-.chat-box {
-  flex: 1;
-  overflow-y: auto;
-  background-color: rgba(224, 224, 224, 0.381);
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  height: 100%;
-}
-
-.chat-message {
-  margin-bottom: 10px;
-}
-
-.chat-message.user {
-  text-align: right;
-}
-
-.chat-message.ai {
-  text-align: left;
-}
-
-.message-box {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: rgba(169, 169, 169, 0.345);
-  padding: 10px;
-}
-
-.message-box input {
-  width: 90%;
-  height: 100%;
-  border: none;
-  padding: 10px;
-  margin-right: 10px;
-}
-
-.message-box input:focus {
-  outline: none;
-  border: 2px solid #007bff84;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.447);
-  transition: box-shadow 0.3s ease-in-out;
-}
-
-.message-box button {
-  background-color: rgba(169, 169, 169, 0.316);
-  border: none;
-  padding: 10px;
+  margin: 5px;
   cursor: pointer;
 }
 
-#loadingIcon {
-  font-size: 24px;
-  color: #007bff;
+/* Hide scrollbar */
+::-webkit-scrollbar {
   display: none;
-}
-
-.model-selector {
-  margin-top: 15px;
-  background-color: #007bff80;
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.model-selector select {
-  background-color: #007bff80;
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.left-panel, .main-content, .right-panel {
-  margin-bottom: 20px;
 }
 
 @media only screen and (max-width: 768px) {
   .left-panel, .main-content, .right-panel {
     margin-bottom: 0;
   }
-  body {
-    font-size: 16px;
-  }
-  .container {
-    padding: 20px;
-  }
-}
-
-/* Efeito Parallax */
-.main-content-wrapper {
-  background-image: url('images/fundo2.png'); /* Aplique a sua imagem de fundo */
-  background-attachment: fixed; /* Faz a imagem de fundo ficar fixa enquanto o conteúdo rola */
-  background-size: cover; /* Tamanho da imagem de fundo cobre toda a área */
-  background-position: center; /* Centraliza a imagem de fundo */
-  background-repeat: no-repeat; /* A imagem não se repete */
-}
-
-/* Hide scrollbar */
-::-webkit-scrollbar {
-  display: none;
 }

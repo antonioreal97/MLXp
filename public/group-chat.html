@@ -7,44 +7,157 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
   <link href="group-chat.css" rel="stylesheet"> <!-- Arquivo CSS externo -->
+  <style>
+    .persona-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+
+    .persona-circle {
+      width: 80px;
+      height: 80px;
+      background-color: #0056b3;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .persona-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .persona-name {
+      color: white;
+      text-align: center;
+    }
+
+    .persona-btn:hover {
+      background-color: #004494;
+    }
+
+    #selectedPersonas img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin: 5px;
+      cursor: pointer;
+    }
+
+    .message-input {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      margin: 20px;
+    }
+
+    .message-input input {
+      border: none;
+      flex-grow: 1;
+      padding: 10px;
+      border-radius: 20px;
+    }
+
+    .message-input button {
+      background: none;
+      border: none;
+      color: #0056b3;
+      font-size: 1.5rem;
+      margin-left: 10px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Classes de cores para as personas */
+    .message.cristiano {
+      background-color: rgba(255, 215, 0, 0.2); /* Amarelo claro */
+      color: #d4af37;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .message.michael {
+      background-color: rgba(0, 123, 255, 0.2); /* Azul claro */
+      color: #007bff;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .message.messi {
+      background-color: rgba(0, 255, 127, 0.2); /* Verde claro */
+      color: #00ff7f;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .message.mac {
+      background-color: rgba(255, 105, 180, 0.2); /* Rosa claro */
+      color: #ff69b4;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .message.user {
+      text-align: right;
+      color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <button class="back-btn" onclick="goBack()">Voltar</button>
-      Chat em Grupo com Personas
-    </div>
-
-    <div class="main-content-wrapper">
-      <div class="left-panel col-md-3">
-        <div class="user-profile">
-          <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
-        </div>
-        <div class="model-selector">
-          <label for="modelSelect">Escolha o modelo:</label>
-          <select id="modelSelect" onchange="changeModel()">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Barra lateral -->
+      <div class="col-md-3">
+        <div class="sidebar">
+          <h5>Usuário: <span id="username">Carregando...</span></h5>
+          <h5>LLM: <span id="model-name" style="color: #0056b3;">llama</span></h5>
+          <select id="modelSelect" class="form-select mb-3" onchange="changeModel()">
             <option value="gpt-4">GPT-4</option>
-            <option value="llama3">LLAMA3</option>
+            <option value="llama3" selected>LLAMA3</option>
           </select>
-        </div>
-        <div class="persona-list" id="personaList"></div>
-      </div>
-
-      <div class="main-content col-md-6">
-        <div class="chat-box" id="chatBox"></div>
-        <div class="message-box">
-          <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." onkeydown="handleKeyPress(event)" />
-          <button onclick="startGroupChat()">
-            <i class="fas fa-paper-plane"></i>
-          </button>
-          <i id="loadingIcon" class="fas fa-spinner fa-spin"></i>
+          <h5>Selecione Personas:</h5>
+          <div id="personaList" class="d-flex flex-wrap justify-content-center"></div>
+          <button class="btn btn-secondary mt-3" onclick="goBack()">Voltar</button>
         </div>
       </div>
 
-      <div class="right-panel col-md-3">
-        <div class="persona-section">
-          <div class="persona-library">PERSONAS SELECIONADAS:</div>
-          <div id="selectedPersonas"></div>
+      <!-- Conteúdo Principal -->
+      <div class="col-md-6 main-content">
+        <div class="logo">
+          <h1>ML<span>X</span>p</h1>
+        </div>
+        <!-- Chat centralizado -->
+        <div class="chat-box" id="chatBox">
+        </div>
+        <div class="message-input">
+          <input type="text" id="userMessage" placeholder="Digite sua mensagem..." onkeydown="handleKeyPress(event)">
+          <button onclick="startGroupChat()"><i class="fas fa-paper-plane"></i></button>
+          <i id="loadingIcon" class="fas fa-spinner fa-spin" style="display: none;"></i> <!-- Ícone de loading -->
+        </div>
+      </div>
+
+      <!-- Personas Selecionadas -->
+      <div class="col-md-3">
+        <div class="persona-selected">
+          <h5>Personas Selecionadas:</h5>
+          <div id="selectedPersonas" class="d-flex flex-wrap"></div>
         </div>
       </div>
     </div>
@@ -53,6 +166,13 @@
   <script>
     let selectedPersonas = [];
     let currentModel = 'llama'; // Modelo padrão inicial
+
+    const personaColors = {
+      'Cristiano Ronaldo': 'cristiano',
+      'Michael Jordan': 'michael',
+      'Lionel Messi': 'messi',
+      'Mac Miller': 'mac'
+    };
 
     function goBack() {
       window.location.href = '/user-personas.html';
@@ -84,12 +204,26 @@
         personaList.innerHTML = '';
 
         personas.forEach((persona) => {
-          const personaDiv = document.createElement('div');
-          personaDiv.innerHTML = `
-            <img src="${persona.image}" alt="${persona.name}" onclick="toggleSelectPersona('${persona.name}', '${persona.image}')">
-            <span>${persona.name}</span>
-          `;
-          personaList.appendChild(personaDiv);
+          const personaWrapper = document.createElement('div');
+          personaWrapper.classList.add('persona-wrapper');
+
+          const circle = document.createElement('div');
+          circle.classList.add('persona-circle');
+
+          const img = document.createElement('img');
+          img.src = persona.image;
+          img.alt = persona.name;
+          img.classList.add('persona-image');
+          img.onclick = () => toggleSelectPersona(persona.name, persona.image);
+
+          const name = document.createElement('div');
+          name.classList.add('persona-name');
+          name.textContent = persona.name;
+
+          circle.appendChild(img);
+          personaWrapper.appendChild(circle);
+          personaWrapper.appendChild(name);
+          personaList.appendChild(personaWrapper);
         });
       } catch (error) {
         console.error('Erro ao carregar personas:', error);
@@ -113,10 +247,6 @@
         const img = document.createElement('img');
         img.src = persona.image;
         img.alt = persona.name;
-        img.style.width = '50px';
-        img.style.height = '50px';
-        img.style.borderRadius = '50%';
-        img.style.margin = '5px';
         img.onclick = () => removeSelectedPersona(persona.name);
         selectedDiv.appendChild(img);
       });
@@ -130,6 +260,7 @@
     function changeModel() {
       const modelSelect = document.getElementById('modelSelect');
       currentModel = modelSelect.value === 'gpt-4' ? 'gpt-4' : 'llama';
+      document.getElementById('model-name').innerText = currentModel === 'gpt-4' ? 'GPT-4' : 'LLAMA3';
     }
 
     async function startGroupChat() {
@@ -148,7 +279,7 @@
       const loadingIcon = document.getElementById('loadingIcon');
       loadingIcon.style.display = 'inline-block';
 
-      addMessageToChat('Você', message);
+      addMessageToChat('Você', message, 'user');
 
       document.getElementById('userMessage').value = '';
 
@@ -169,7 +300,7 @@
 
           const data = await response.json();
           if (data.reply) {
-            addMessageToChat(persona.name, data.reply);
+            addMessageToChat(persona.name, data.reply, personaColors[persona.name]);
             lastResponse = data.reply;
           } else {
             addMessageToChat('AI', 'Desculpe, não consegui processar sua mensagem.');
@@ -183,10 +314,10 @@
       loadingIcon.style.display = 'none';
     }
 
-    function addMessageToChat(sender, message) {
+    function addMessageToChat(sender, message, colorClass = '') {
       const chatBox = document.getElementById('chatBox');
       const messageDiv = document.createElement('div');
-      messageDiv.classList.add('chat-message');
+      messageDiv.classList.add('message', colorClass);
       messageDiv.innerText = `${sender}: ${message}`;
       chatBox.appendChild(messageDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
@@ -198,8 +329,8 @@
       }
     }
 
-    window.onload = () => {
-      loadLoggedUser(); // Carrega o usuário logado e as personas associadas
+    window.onload = function() {
+      loadLoggedUser();
     };
   </script>
 </body>

@@ -1,224 +1,155 @@
 body {
-  background-image: url('images/fundo2.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-image: url('images/fundo2.png'); /* Coloque o caminho correto da sua imagem */
+  background-size: cover; /* Garante que a imagem cubra todo o background */
+  background-position: center; /* Centraliza a imagem de fundo */
+  background-attachment: fixed; /* Faz com que a imagem fique fixa ao rolar a página */
+  background-repeat: no-repeat; /* Não repete a imagem */
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow-x: hidden; /* Disable horizontal scrollbar */
-  overflow-y: hidden;  /* Disable vertical scrollbar */
+  min-height: 100vh; /* Garante que o corpo ocupe a tela inteira */
+  overflow-x: hidden;
+  overflow-y: auto; /* Permite rolagem na página */
 }
 
-.container {
+.container-fluid {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #c0c0c03b;
-  height: 100%;
+  min-height: 100vh; /* Ajusta o container para ocupar a altura total da página */
 }
 
-.header {
-  background-color: rgba(211, 211, 211, 0.193);
-  padding: 10px;
-  text-align: center;
+.sidebar {
+  background-color: rgba(42, 75, 92, 0.8); /* Cor de fundo com transparência */
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+  color: white;
+}
+
+.sidebar h5 {
   font-weight: bold;
-  font-size: 24px;
 }
 
-.main-content-wrapper {
-  flex: 1;
+.sidebar .btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.persona-btn {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
   display: flex;
-  flex-wrap: nowrap;  /* Ensure content doesn't wrap */
-  padding: 10px;
-  height: calc(100% - 60px); /* Adjust to ensure full height with header */
-  overflow: hidden;  /* Disable scroll in main wrapper */
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
 }
 
-.left-panel, .right-panel {
-  background-color: rgba(211, 211, 211, 0.207);
-  padding: 10px;
-  height: 100%;  /* Ensure panel occupies full height */
-  overflow-y: auto;  /* Scroll for content inside */
-}
-
-.left-panel {
-  width: 20%;
-}
-
-.right-panel {
-  width: 20%;
+.persona-btn:hover {
+  background-color: #004494;
 }
 
 .main-content {
-  background-color: rgba(211, 211, 211, 0.212);
-  padding: 10px;
-  width: 60%;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  justify-content: space-between;
+  padding: 20px;
+  margin: 20px;
+  min-height: calc(100vh - 100px); /* Garante que o conteúdo principal ocupe o espaço necessário */
 }
 
-.user-profile, .persona-library, .persona-list {
-  background-color: rgba(169, 169, 169, 0.184);
-  margin-bottom: 10px;
-  padding: 10px;
+.main-content .logo {
+  text-align: center;
+  margin-top: 20px;
 }
 
-.persona-list img {
-  width: 80px;
-  height: 80px;
-  margin-right: 10px;
-  cursor: pointer;
-  background-color: transparent;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #007bff7f;
-  transition: transform 0.3s ease;
+.main-content .logo h1 {
+  font-size: 3rem;
+  color: #0056b3;
 }
 
-.persona-list img:hover {
-  transform: scale(1.1);
+.main-content .logo h1 span {
+  color: white;
 }
 
-.persona-section img {
-  width: 100%;
-  height: 185px;
-  margin-bottom: 20px;
-  border-radius: 150%;
-  object-fit: cover;
-}
-
+/* Área do chat no centro */
 .chat-box {
-  flex: 1;
-  overflow-y: auto;
-  background-color: rgba(224, 224, 224, 0.31);
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  height: 100%;
+  flex-grow: 1; /* Faz com que o chat cresça conforme necessário */
+  background-color: rgba(74, 74, 74, 0.945); /* Fundo com transparência */
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  overflow-y: auto; /* Ativa rolagem quando necessário */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* As mensagens começam no final da caixa */
 }
 
-.chat-message {
+.message {
   margin-bottom: 10px;
 }
 
-.chat-message.user {
+.message.user {
   text-align: right;
+  color: #ffffff;
 }
 
-.chat-message.ai {
+.message.ai {
   text-align: left;
+  color: #6cf0fa;
 }
 
-.message-box {
+.main-content .message-input {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: rgba(169, 169, 169, 0.222);
   padding: 10px;
-  width: 100%;
+  background-color: rgba(255, 255, 255, 0.575);
+  border-radius: 20px;
+  margin: 20px 0;
 }
 
-.message-box input {
-  width: 90%;
-  height: 100%;
+.main-content .message-input input {
   border: none;
+  flex-grow: 1;
   padding: 10px;
-  margin-right: 10px;
+  border-radius: 20px;
 }
 
-.message-box button {
-  background-color: rgba(169, 169, 169, 0.273);
+.main-content .message-input button {
+  background: none;
   border: none;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.btn-access-personas, .btn-create-persona {
-  width: 100%;
-  padding: 15px;
-  background-color: #007bff80;
-  color: white;
-  text-align: center;
-  font-weight: bold;
-  border-radius: 5px;
-  margin-top: 15px;
-  cursor: pointer;
-}
-
-.btn-access-personas:hover, .btn-create-persona:hover {
-  background-color: #0057b38d;
-}
-
-#loadingIcon {
-  font-size: 20px;
-  color: #007bffbf;
-  display: none;
+  color: #0056b3;
+  font-size: 1.5rem;
   margin-left: 10px;
 }
 
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.message-box button:active i {
-  animation: rotate 0.5s ease-in-out;
-}
-
-.model-selector {
-  margin-top: 15px;
-  background-color: #007bff80;
+.persona-selected {
+  background-color: rgba(74, 74, 74, 0.8); /* Fundo com transparência */
   color: white;
-  padding: 15px;
-  border-radius: 5px;
   text-align: center;
-  cursor: pointer;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
 }
 
-.model-selector select {
-  background-color: #007bff80;
-  border: none;
+.persona-selected .persona-img {
+  background-color: #0056b3;
   color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
 }
 
-.left-panel, .main-content, .right-panel {
-  margin-bottom: 20px;
-}
-
-@media only screen and (max-width: 768px) {
-  .left-panel, .main-content, .right-panel {
-    margin-bottom: 0;
-  }
-  body {
-    font-size: 16px;
-  }
-  .container {
-    padding: 20px;
-  }
-}
-
-/* Efeito Parallax */
-.main-content-wrapper {
-  background-image: url('images/fundo2.png'); /* Aplique a sua imagem de fundo */
-  background-attachment: fixed; /* Faz a imagem de fundo ficar fixa enquanto o conteúdo rola */
-  background-size: cover; /* Tamanho da imagem de fundo cobre toda a área */
-  background-position: center; /* Centraliza a imagem de fundo */
-  background-repeat: no-repeat; /* A imagem não se repete */
-}
-
-/* Hide scrollbar */
-::-webkit-scrollbar {
-  display: none;
+.persona-selected .persona-img {
+  background-size: cover;
+  background-position: center;
 }

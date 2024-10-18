@@ -7,7 +7,6 @@ const bcrypt = require('bcrypt');
 const axios = require('axios'); // Usando axios para fazer requisições HTTP
 const csrf = require('csurf'); // Middleware CSRF
 const cookieParser = require('cookie-parser'); // Para gerenciar cookies
-const fetch = require('node-fetch'); // Para fazer requisições HTTP
 const { Configuration, OpenAIApi } = require('openai'); // Para usar a API da OpenAI
 
 const app = express();
@@ -256,6 +255,27 @@ app.post('/send-message-llama', isAuthenticated, async (req, res) => {
   }
 });
 
+// Rota para gerar a descrição da persona (baseada no modelo selecionado)
+app.post('/generate-description', isAuthenticated, async (req, res) => {
+  const { persona } = req.body;
+
+  try {
+    const message = `Faça uma curta descrição da ${persona} no máximo um parágrafo.`;
+    
+    // Definir a rota correta de acordo com o modelo atual
+    const route = currentLoggedInUser.model === 'gpt-4' ? '/send-message-gpt-4' : '/send-message-llama';
+    
+    // Fazer a requisição para a rota correta
+    const response = await axios.post(route, { persona, message });
+    const description = response.data.reply;
+
+    res.json({ description });
+  } catch (error) {
+    console.error('Erro ao gerar descrição:', error);
+    res.status(500).json({ error: 'Erro ao gerar a descrição da persona.' });
+  }
+});
+
 // Rota para excluir uma persona
 app.delete('/delete-persona', isAuthenticated, async (req, res) => {
   const { name } = req.body;
@@ -285,9 +305,41 @@ app.delete('/delete-persona', isAuthenticated, async (req, res) => {
   }
 });
 
-// Rota para carregar formulário com token CSRF
-app.get('/get-csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
+// Rota para geração de imagem com o modelo da Hugging Face
+app.post('/generate-image', isAuthenticated, async (req, res) => {
+  const { prompt } = req.body;
+
+  if (!prompt) {
+    return res.status(400).json({ message: 'Prompt para geração de imagem não fornecido.' });
+  }
+
+  const apiKey = process.env.HUGGING_FACE_API_TOKEN;
+
+  try {
+    const response = await axios.post(
+      'https://api-inference.huggingface.co/models/glif/90s-anime-art', // Defina o modelo que será usado do Hugging Face 
+      {
+        inputs: prompt,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        responseType: 'arraybuffer', // Para tratar a imagem como binário
+      }
+    );
+
+    // Armazenar a imagem gerada localmente
+    const outputFilePath = path.join(__dirname, 'public', 'generated-image.png');
+    fs.writeFileSync(outputFilePath, response.data);
+
+    // Enviar o caminho da imagem gerada para o frontend
+    res.json({ imageUrl: '/generated-image.png' });
+  } catch (error) {
+    console.error('Erro ao gerar imagem:', error);
+    res.status(500).json({ message: 'Erro ao gerar imagem.' });
+  }
 });
 
 // Inicia o servidor

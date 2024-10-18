@@ -2,245 +2,155 @@ body {
   background-image: url('images/fundo2.png');
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   background-repeat: no-repeat;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow-x: hidden; /* Disable horizontal scrollbar */
-  overflow-y: auto;  /* Keep vertical scrollbar */
+  min-height: 100vh; /* Mínimo de altura para cobrir toda a tela */
+  overflow-x: hidden;
+  overflow-y: auto; /* Permitir rolagem no corpo da página */
 }
 
-.container {
+.container-fluid {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: rgba(192, 192, 192, 0.132);
-  height: 100%;
 }
 
-.header {
-  background-color: rgba(211, 211, 211, 0.185);
-  padding: 10px;
-  text-align: center;
+.sidebar {
+  background-color: rgba(42, 75, 92, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+  color: white;
+}
+
+.sidebar h5 {
   font-weight: bold;
-  font-size: 24px;
-  position: relative;
 }
 
-.header .back-btn {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #007bff87;
-  color: rgba(255, 255, 255, 0.458);
-  border: none;
-  padding: 5px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
+.sidebar .btn {
+  width: 100%;
+  margin-bottom: 10px;
 }
 
-.header .back-btn:hover {
-  background-color: #0057b384;
-}
-
-.main-content-wrapper {
-  flex: 1;
+.persona-btn {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
   display: flex;
-  flex-wrap: wrap;
-  padding: 10px;
-  height: 100%;
-  overflow-y: auto;  /* Keep vertical scrollbar */
-  position: relative; /* Position for parallax effect */
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
 }
 
-.left-panel, .right-panel {
-  background-color: rgba(211, 211, 211, 0.249);
-  padding: 10px;
-}
-
-.left-panel {
-  width: 20%;
-}
-
-.right-panel {
-  width: 20%;
+.persona-btn:hover {
+  background-color: #004494;
 }
 
 .main-content {
-  background-color: rgba(211, 211, 211, 0.233);
-  padding: 10px;
-  width: 60%;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  justify-content: space-between;
+  padding: 20px;
+  margin: 20px;
+  min-height: calc(100vh - 100px); /* Garante que o conteúdo principal tenha altura mínima suficiente */
 }
 
-.user-profile {
-  background-color: rgba(169, 169, 169, 0.218);
-  margin-bottom: 10px;
-  padding: 10px;
+.main-content .logo {
+  text-align: center;
+  margin-top: 20px;
 }
 
-.persona-list img {
-  width: 80px;
-  height: 80px;
-  margin-right: 10px;
-  cursor: pointer;
-  background-color: transparent;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #007bff6d;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.main-content .logo h1 {
+  font-size: 3rem;
+  color: #0056b3;
 }
 
-.persona-list img:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(0, 123, 255, 0.482);
+.main-content .logo h1 span {
+  color: white;
 }
 
-@keyframes pulsar {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-.persona-section img.selected {
-  animation: pulsar 0.5s ease-in-out;
-}
-
-.persona-section img {
-  width: 100%;
-  height: 185px;
-  margin-bottom: 20px;
-  border-radius: 150%;
-  object-fit: cover;
-}
-
+/* Área do chat no centro */
 .chat-box {
-  flex: 1;
-  overflow-y: auto;
-  background-color: rgba(224, 224, 224, 0.333);
-  padding: 10px;
-  border-radius: 5px;
+  flex-grow: 1;
+  background-color: rgba(74, 74, 74, 0.945);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0; /* Ajuste as margens para permitir o crescimento natural */
+  overflow-y: auto; /* Ativa rolagem apenas quando necessário */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.message {
   margin-bottom: 10px;
-  height: 100%;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.chat-message {
-  margin-bottom: 10px;
-  opacity: 0;
-  animation: fadeIn 0.5s forwards;
-}
-
-.chat-message.user {
+.message.user {
   text-align: right;
+  color: #ffffff;
 }
 
-.chat-message.ai {
+.message.ai {
   text-align: left;
+  color: #6cf0fa;
 }
 
-.message-box {
+.main-content .message-input {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: rgba(169, 169, 169, 0.311);
   padding: 10px;
+  background-color: rgba(255, 255, 255, 0.575);
+  border-radius: 20px;
+  margin: 20px 0;
 }
 
-.message-box input {
-  width: 90%;
-  height: 100%;
+.main-content .message-input input {
   border: none;
+  flex-grow: 1;
   padding: 10px;
-  margin-right: 10px;
+  border-radius: 20px;
 }
 
-.message-box input:focus {
-  outline: none;
-  border: 2px solid #007bff84;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.447);
-  transition: box-shadow 0.3s ease-in-out;
-}
-
-.message-box button {
-  background-color: rgba(169, 169, 169, 0.359);
+.main-content .message-input button {
+  background: none;
   border: none;
-  padding: 10px;
-  cursor: pointer;
+  color: #0056b3;
+  font-size: 1.5rem;
+  margin-left: 10px;
 }
 
-#loadingIcon {
-  font-size: 20px;
-  color: #007bff90;
-  display: none;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.message-box button:active i {
-  animation: rotate 0.5s ease-in-out;
-}
-
-.group-chat-btn {
-  width: 49%;
-  padding: 15px;
-  background-color: #28a74685;
-  color: rgba(255, 255, 255, 0.437);
+.persona-selected {
+  background-color: rgba(74, 74, 74, 0.8);
+  color: white;
   text-align: center;
-  font-weight: bold;
-  border-radius: 5px;
-  margin-top: 15px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
 }
 
-.group-chat-btn:hover {
-  background-color: #21883773;
-}
-
-.edit-personas-btn {
-  width: 49%;
-  padding: 5px 15px;
-  background-color: #007bff91;
-  color: rgba(255, 255, 255, 0.471);
-  border: none;
-  text-align: center;
-  font-weight: bold;
-  border-radius: 5px;
-  margin-top: 15px;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 14px;
-  display: inline-block;
-}
-
-.edit-personas-btn:hover {
+.persona-selected .persona-img {
   background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+
+.persona-selected .persona-img {
+  background-size: cover;
+  background-position: center;
 }
 
 .model-selector {
@@ -250,7 +160,6 @@ body {
   padding: 15px;
   border-radius: 5px;
   text-align: center;
-  cursor: pointer;
 }
 
 .model-selector select {
@@ -260,35 +169,33 @@ body {
   padding: 5px 10px;
   border-radius: 5px;
   font-weight: bold;
+}
+
+.edit-personas-btn, .group-chat-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 5px;
+  margin-top: 15px;
   cursor: pointer;
 }
 
-.left-panel, .main-content, .right-panel {
-  margin-bottom: 20px;
+.edit-personas-btn:hover, .group-chat-btn:hover {
+  background-color: #0056b3;
 }
 
+.group-chat-btn {
+  background-color: #28a746;
+}
+
+/* Ajustes para telas menores */
 @media only screen and (max-width: 768px) {
   .left-panel, .main-content, .right-panel {
-    margin-bottom: 0;
+    width: 100%;
+    margin-bottom: 10px;
   }
-  body {
-    font-size: 16px;
-  }
-  .container {
-    padding: 20px;
-  }
-}
-
-/* Efeito Parallax */
-.main-content-wrapper {
-  background-image: url('images/fundo2.png'); /* Aplique a sua imagem de fundo */
-  background-attachment: fixed; /* Faz a imagem de fundo ficar fixa enquanto o conteúdo rola */
-  background-size: cover; /* Tamanho da imagem de fundo cobre toda a área */
-  background-position: center; /* Centraliza a imagem de fundo */
-  background-repeat: no-repeat; /* A imagem não se repete */
-}
-
-/* Hide scrollbar */
-::-webkit-scrollbar {
-  display: none;
 }

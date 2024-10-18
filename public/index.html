@@ -13,10 +13,9 @@
             font-family: Arial, sans-serif;
             color: white;
             text-align: center;
-            overflow: hidden; /* Remove o scroll para manter o efeito imersivo */
+            overflow: hidden;
         }
 
-        /* A imagem de fundo agora tem o efeito 3D */
         .background {
             position: absolute;
             top: 0;
@@ -36,21 +35,21 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.514);
-            z-index: 2; /* Overlay acima da imagem de fundo, mas abaixo dos botões */
+            z-index: 2;
             transition: filter 0.3s ease, brightness 0.3s ease;
         }
 
         .content {
             position: relative;
-            top: 35%; /* Ajusta a posição do conteúdo */
+            top: 35%;
             transform: translateY(-50%);
-            z-index: 3; /* Conteúdo acima da overlay */
+            z-index: 3;
         }
 
         .logo {
-            width: 400px; /* Tamanho da logo */
-            margin-bottom: 1px; /* Espaço reduzido entre a logo e o título */
-            animation: float 10s ease-in-out infinite; /* Efeito circular */
+            width: 400px;
+            margin-bottom: 1px;
+            animation: float 10s ease-in-out infinite;
         }
 
         @keyframes float {
@@ -74,7 +73,7 @@
         .title {
             font-size: 4em;
             font-weight: bold;
-            margin-top: -20px; /* Aproxima o título da logo */
+            margin-top: -20px;
         }
 
         .title span {
@@ -90,7 +89,7 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            z-index: 3; /* Botões acima da overlay */
+            z-index: 3;
         }
 
         .btn-group .btn {
@@ -108,14 +107,12 @@
             background-color: #05002e;
         }
 
-        /* Invertendo o efeito de desfoque ao passar o mouse sobre os botões */
         .btn-group:hover ~ .overlay {
-            filter: blur(0px) brightness(1.2); /* Remover o desfoque e aumentar o brilho */
+            filter: blur(0px) brightness(1.2);
         }
 
-        /* Efeito de foco nos botões */
         .btn-group .btn:hover {
-            filter: brightness(1.3); /* Aumenta o brilho nos botões */
+            filter: brightness(1.3);
         }
     </style>
 </head>
@@ -144,12 +141,14 @@
         });
 
         function redirectTo(page) {
+            console.log(`Redirecionando para: ${page}`);  // Adicionado para verificar se a função é chamada corretamente
             if (page === 'login') {
-                window.location.href = '/login.html'; // Redireciona para a página de login
+                window.location.href = '/login.html';  // Verifique se a página login.html está no diretório correto
             } else if (page === 'register') {
-                window.location.href = '/login.html'; // Redireciona para a página de cadastro (mantendo o cadastro na página de login)
+                window.location.href = '/login.html';  // Verifique se a página register.html está no diretório correto
             }
         }
     </script>
 </body>
 </html>
+

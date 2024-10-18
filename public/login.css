@@ -49,6 +49,13 @@ body, html {
   margin-bottom: 30px;
 }
 
+/* Estilo da logo */
+.logo-img {
+  width: 500px; /* Ajuste o tamanho da logo */
+  margin-bottom: 20px; /* Espaço entre a logo e o título */
+}
+
+/* Estilos dos campos de entrada */
 .form-control {
   background-color: #b3b3b3;
   border: none;

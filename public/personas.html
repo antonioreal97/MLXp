@@ -1,186 +1,306 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MLX - Personas</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-  <link href="personas.css" rel="stylesheet"> <!-- Link para o arquivo externo de estilo -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLX - Personas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="personas.css" rel="stylesheet"> <!-- Link para o arquivo CSS externo -->
+    <style>
+        .persona-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        .persona-circle {
+            width: 80px;
+            height: 80px;
+            background-color: #0056b3; /* Cor azul */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            overflow: hidden; /* Garante que a imagem não saia do círculo */
+        }
+
+        .persona-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .persona-name {
+            color: white;
+            text-align: center;
+        }
+
+        .persona-description {
+            margin-top: 10px;
+            color: #ddd;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .persona-btn:hover {
+            background-color: #004494;
+        }
+
+        /* Estilo para a descrição abaixo da persona selecionada */
+        #personaDescription {
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">MLX</div>
-    
-    <div class="main-content-wrapper">
-      <div class="left-panel col-md-3">
-        <div class="user-profile">
-          <i class="fas fa-user"></i> Perfil do Usuário: <span id="username">Carregando...</span>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Barra lateral -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <h5>Usuário: <span id="username">Carregando...</span></h5>
+                    <h5>LLM: <span style="color: #0056b3;" id="model-name">llama</span></h5>
+                    <select id="modelSelect" class="form-select mb-3" onchange="changeModel()">
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="llama3">LLAMA3</option>
+                    </select>
+                    <h5>Selecione a Persona:</h5>
+                    <div id="personaList" class="d-flex flex-wrap justify-content-center"></div>
+                    <button class="btn btn-primary mb-2" onclick="createNewPersona()">Criar Persona</button>
+                    <button class="btn btn-primary mb-2" onclick="accessUserPersonas()">Acessar Personas Criadas</button>
+                    <!-- Botão para acessar a geração de imagem -->
+                    <button class="btn btn-primary" onclick="accessArtPersona()">Acessar Geração de Imagem</button>
+                </div>
+            </div>
+
+            <!-- Conteúdo Principal -->
+            <div class="col-md-6 main-content">
+                <div class="logo">
+                    <h1>ML<span>X</span>p</h1>
+                </div>
+                <!-- Chat centralizado -->
+                <div class="chat-box" id="chatBox">
+                </div>
+                <div class="message-input">
+                    <input type="text" id="userMessage" placeholder="Digite sua mensagem..." onkeydown="handleKeyPress(event)">
+                    <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                    <i id="loadingIcon" class="fas fa-spinner fa-spin" style="display: none;"></i> <!-- Ícone de loading -->
+                </div>
+            </div>
+
+            <!-- Persona Selecionada -->
+            <div class="col-md-3">
+                <div class="persona-selected">
+                    <div class="persona-img" id="selectedPersonaImage"></div>
+                    <p id="selectedPersonaName">Nenhuma Persona Selecionada</p>
+                    <div id="personaDescription">Selecione uma persona para ver a descrição...</div> <!-- Descrição da persona -->
+                </div>
+            </div>
         </div>
-        <div class="persona-library">LLM: 
-          <span id="model-name">llama</span> <!-- Nome do modelo exibido llama ou gpt-4 -->
-        </div>
-        <div class="model-selector">
-          <label for="modelSelect">Escolha o modelo:</label>
-          <select id="modelSelect" onchange="changeModel()">
-            <option value="gpt-4">GPT-4</option>
-            <option value="llama3">LLAMA3</option>
-          </select>
-        </div>
-        <div class="persona-library">BIBLIOTECA DE PERSONAS</div>
-        <div id="personaList" class="persona-list"></div> <!-- Lista de personas será inserida aqui -->
-        <div class="btn-access-personas" onclick="accessUserPersonas()">Acessar Personas Criadas</div>
-        <div class="btn-create-persona" onclick="createNewPersona()">Criar Nova Persona</div>
-      </div>
-      
-      <div class="main-content col-md-6">
-        <div class="chat-box" id="chatBox"></div>
-        <div class="message-box">
-          <input type="text" id="userMessage" placeholder="Digite sua mensagem aqui..." onkeydown="handleKeyPress(event)" />
-          <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
-          <i id="loadingIcon" class="fas fa-spinner fa-spin"></i> <!-- Ícone de loading -->
-        </div>
-      </div>
-      
-      <div class="right-panel col-md-3">
-        <div class="persona-section">
-          <div class="persona-library">PERSONA:</div>
-          <img src="images/persona-main.png" alt="Persona Image" id="selectedPersonaImage">
-          <div id="selectedPersonaName">Nenhuma persona selecionada</div>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <script>
-    let selectedPersona = '';
-    const defaultPersonaImage = 'images/persona-main.png';
-    let currentModel = 'llama'; // Modelo inicial definido corretamente como 'llama' ou 'gpt-4'
+    <script>
+        let selectedPersona = '';
+        const defaultPersonaImage = 'images/persona-main.png';
+        let currentModel = 'llama'; // Valor padrão inicial
 
-    function loadLoggedUser() {
-      fetch('/get-logged-user')
-      .then(response => {
-        if (response.status === 401) {
-          window.location.href = '/'; 
-        } 
-        return response.json();
-      })
-      .then(data => {
-        document.getElementById('username').innerText = data.username || 'Desconhecido';
-        loadPersonas(); // Carregar personas públicas
-      })
-      .catch(error => {
-        console.error('Erro ao carregar o nome do usuário:', error);
-        document.getElementById('username').innerText = 'Erro';
-      });
-    }
-
-    function loadPersonas() {
-      fetch('/personas.json')
-        .then(response => response.json())
-        .then(personas => {
-          const personaList = document.getElementById('personaList');
-          personaList.innerHTML = '';
-
-          if (personas.length > 0) {
-            personas.forEach(persona => displayPersona(persona, personaList));
-          } else {
-            personaList.innerHTML = '<p>Nenhuma persona pública disponível no momento.</p>';
-          }
-        })
-        .catch(error => console.error('Erro ao carregar personas:', error));
-    }
-
-    function displayPersona(persona, container) {
-      const img = document.createElement('img');
-      img.src = persona.image || defaultPersonaImage;
-      img.alt = persona.name;
-      img.onclick = () => selectPersona(persona.name, persona.image);
-      container.appendChild(img);
-    }
-
-    function selectPersona(personaName, personaImage) {
-      selectedPersona = personaName;
-      document.getElementById('selectedPersonaName').innerText = personaName;
-      document.getElementById('selectedPersonaImage').src = personaImage || defaultPersonaImage;
-    }
-
-    function accessUserPersonas() {
-      window.location.href = '/user-personas.html';
-    }
-
-    function createNewPersona() {
-      window.location.href = '/create-persona.html';
-    }
-
-    function handleKeyPress(event) {
-      if (event.key === 'Enter') {
-        sendMessage();
-      }
-    }
-
-    function changeModel() {
-      const modelSelect = document.getElementById('modelSelect');
-      currentModel = modelSelect.value === 'gpt-4' ? 'gpt-4' : 'llama'; // Certifica que 'llama' é o valor para LLaMA
-      document.getElementById('model-name').innerText = modelSelect.options[modelSelect.selectedIndex].text;
-    }
-
-    async function sendMessage() {
-      const messageInput = document.getElementById('userMessage');
-      const message = messageInput.value.trim();
-      const loadingIcon = document.getElementById('loadingIcon');
-      const sendButton = document.querySelector('button');
-
-      if (message === '' || selectedPersona === '') {
-        alert('Por favor, selecione uma persona e digite uma mensagem.');
-        return;
-      }
-
-      loadingIcon.style.display = 'inline-block';
-      sendButton.disabled = true;
-
-      addMessageToChat('Você', message);
-      messageInput.value = '';
-
-      const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
-
-      try {
-        const response = await fetch(`/send-message-${currentModel}`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'CSRF-Token': csrfToken
-          },
-          body: JSON.stringify({ persona: selectedPersona, message })
-        });
-
-        const data = await response.json();
-        if (data.reply) {
-          addMessageToChat(selectedPersona, data.reply); // Exibe o nome da persona que está respondendo
-        } else {
-          addMessageToChat(selectedPersona, 'Desculpe, não consegui processar sua mensagem.');
+        function loadLoggedUser() {
+            fetch('/get-logged-user')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('username').innerText = data.username || 'Desconhecido';
+                loadPersonas(); // Carregar personas públicas
+            })
+            .catch(error => {
+                console.error('Erro ao carregar o nome do usuário:', error);
+                document.getElementById('username').innerText = 'Erro';
+            });
         }
-      } catch (error) {
-        console.error('Erro ao enviar mensagem:', error);
-        addMessageToChat(selectedPersona, 'Ocorreu um erro ao processar sua mensagem.');
-      } finally {
-        loadingIcon.style.display = 'none';
-        sendButton.disabled = false;
-      }
-    }
 
-    function addMessageToChat(sender, message) {
-      const chatBox = document.getElementById('chatBox');
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('chat-message', sender === 'Você' ? 'user' : 'ai');
-      messageDiv.innerText = `${sender}: ${message}`;
-      chatBox.appendChild(messageDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+        function loadPersonas() {
+            fetch('/personas.json')
+            .then(response => response.json())
+            .then(personas => {
+                const personaList = document.getElementById('personaList');
+                personaList.innerHTML = '';
 
-    window.onload = () => {
-      loadLoggedUser();
-    };
-  </script>
+                if (personas.length > 0) {
+                    personas.forEach(persona => displayPersona(persona, personaList));
+                } else {
+                    personaList.innerHTML = '<p>Nenhuma persona disponível no momento.</p>';
+                }
+            })
+            .catch(error => console.error('Erro ao carregar personas:', error));
+        }
+
+        function displayPersona(persona, container) {
+            const personaWrapper = document.createElement('div');
+            personaWrapper.classList.add('persona-wrapper');
+
+            // Círculo azul para a imagem
+            const circle = document.createElement('div');
+            circle.classList.add('persona-circle');
+
+            // Imagem da persona
+            const img = document.createElement('img');
+            img.src = persona.image || 'images/default-persona.png'; // Imagem padrão se não houver
+            img.alt = persona.name;
+            img.classList.add('persona-image');
+
+            // Nome da persona
+            const name = document.createElement('div');
+            name.classList.add('persona-name');
+            name.textContent = persona.name;
+
+            // Colocando imagem no círculo e adicionando ao wrapper
+            circle.appendChild(img);
+            personaWrapper.appendChild(circle);
+            personaWrapper.appendChild(name);
+
+            personaWrapper.onclick = () => selectPersona(persona.name, persona.image);
+
+            container.appendChild(personaWrapper);
+        }
+
+        function selectPersona(personaName, personaImage) {
+            selectedPersona = personaName;
+            document.getElementById('selectedPersonaName').innerText = personaName;
+            document.getElementById('selectedPersonaImage').style.backgroundImage = `url(${personaImage || defaultPersonaImage})`;
+            document.getElementById('selectedPersonaImage').style.backgroundSize = 'cover';
+
+            // Chamar a função para gerar a descrição da persona
+            generatePersonaDescription(personaName);
+        }
+
+        async function generatePersonaDescription(personaName) {
+            const loadingIcon = document.getElementById('loadingIcon');
+            loadingIcon.style.display = 'inline-block'; // Exibe o ícone de loading
+            try {
+                const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
+
+                // Rota da API dependendo do modelo (GPT-4 ou LLaMA)
+                const route = currentModel === 'gpt-4' ? '/send-message-gpt-4' : '/send-message-llama';
+                
+                // Requisição para gerar a descrição da persona
+                const response = await fetch(route, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({
+                        persona: personaName,
+                        message: `Por favor, me forneça uma descrição detalhada das principais características da persona chamada ${personaName}.`
+                    })
+                });
+                
+                const data = await response.json();
+                const description = data.reply || 'Descrição não disponível.';
+                document.getElementById('personaDescription').innerText = description; // Atualiza a descrição da persona
+
+            } catch (error) {
+                console.error('Erro ao gerar a descrição:', error);
+                document.getElementById('personaDescription').innerText = 'Erro ao gerar a descrição.';
+            } finally {
+                loadingIcon.style.display = 'none'; // Oculta o ícone de loading
+            }
+        }
+
+        function changeModel() {
+            const modelSelect = document.getElementById('modelSelect');
+            currentModel = modelSelect.value === 'gpt-4' ? 'gpt-4' : 'llama'; // Define se o modelo é GPT-4 ou LLaMA
+            document.getElementById('model-name').innerText = modelSelect.options[modelSelect.selectedIndex].text;
+        }
+
+        async function sendMessage() {
+            const messageInput = document.getElementById('userMessage');
+            const message = messageInput.value.trim();
+            const loadingIcon = document.getElementById('loadingIcon');
+            const sendButton = document.querySelector('button');
+
+            if (message === '' || selectedPersona === '') {
+                alert('Por favor, selecione uma persona e digite uma mensagem.');
+                return;
+            }
+
+            loadingIcon.style.display = 'inline-block'; // Exibe o ícone de loading
+            sendButton.disabled = true;
+
+            addMessageToChat('Você', message);
+            messageInput.value = '';
+
+            const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
+
+            try {
+                // Definir a URL da rota com base no modelo selecionado
+                const route = currentModel === 'gpt-4' ? '/send-message-gpt-4' : '/send-message-llama';
+                
+                // Fazendo a requisição à rota correta (gpt-4 ou llama)
+                const response = await fetch(route, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({ persona: selectedPersona, message })
+                });
+
+                const data = await response.json();
+                if (data.reply) {
+                    addMessageToChat(selectedPersona, data.reply); // Exibe a resposta da persona
+                } else {
+                    addMessageToChat(selectedPersona, 'Desculpe, não consegui processar sua mensagem.');
+                }
+            } catch (error) {
+                console.error('Erro ao enviar mensagem:', error);
+                addMessageToChat(selectedPersona, 'Ocorreu um erro ao processar sua mensagem.');
+            } finally {
+                loadingIcon.style.display = 'none'; // Esconde o ícone de loading
+                sendButton.disabled = false;
+            }
+        }
+
+        function addMessageToChat(sender, message) {
+            const chatBox = document.getElementById('chatBox');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'Você' ? 'user' : 'ai');
+            messageDiv.innerText = `${sender}: ${message}`;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // Rola automaticamente para a última mensagem
+        }
+
+        function createNewPersona() {
+            window.location.href = 'create-persona.html'; // Redireciona para a página de criação de persona
+        }
+
+        function accessUserPersonas() {
+            window.location.href = 'user-personas.html'; // Redireciona para a página das personas criadas
+        }
+
+        // Função para redirecionar para a página de geração de imagem
+        function accessArtPersona() {
+            window.location.href = 'artPersona.html'; // Redireciona para a página de geração de imagem
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        window.onload = function() {
+            loadLoggedUser();
+        };
+    </script>
 </body>
 </html>
