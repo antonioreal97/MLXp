@@ -60,6 +60,25 @@
             background-color: rgba(0, 0, 0, 0.5);
             border-radius: 10px;
         }
+
+        /* Estilos do botão de logout */
+        #logoutBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #080268;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        #logoutBtn:hover {
+            background-color: #285aff;
+        }
     </style>
 </head>
 <body>
@@ -108,6 +127,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Botão de logout -->
+    <button id="logoutBtn" title="Logout" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt"></i>
+    </button>
 
     <script>
         let selectedPersona = '';
@@ -295,6 +319,29 @@
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
                 sendMessage();
+            }
+        }
+
+        // Função para fazer o logout do usuário
+        async function logoutUser() {
+            try {
+                const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
+
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken
+                    }
+                });
+                if (response.ok) {
+                    window.location.href = 'index.html'; // Redireciona para a página de login (index.html)
+                } else {
+                    alert('Erro ao fazer logout.');
+                }
+            } catch (error) {
+                console.error('Erro ao fazer logout:', error);
+                alert('Erro ao tentar fazer logout.');
             }
         }
 

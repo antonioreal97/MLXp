@@ -8,20 +8,20 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
 html, body {
-  height: 100%;
+  height: auto; /* Altere para auto para permitir crescimento */
 }
 
 .container-fluid {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%; /* Permite que o container cresça com o conteúdo */
 }
 
 .sidebar {
@@ -88,10 +88,9 @@ html, body {
   padding: 20px;
   margin: 20px;
   overflow-y: auto; /* Permite rolar verticalmente */
-  max-height: 70vh; /* Define a altura máxima antes de ativar o scroll */
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-end; /* Garante que o foco esteja na última mensagem */
 }
 
 /* Estilo de mensagens */

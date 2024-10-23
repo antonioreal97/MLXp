@@ -12,7 +12,7 @@ const { Configuration, OpenAIApi } = require('openai'); // Para usar a API da Op
 const app = express();
 
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serve arquivos estáticos
+app.use(express.static(path.join(__dirname, '..', 'public'))); // Serve arquivos estáticos da pasta 'public'
 app.use(cookieParser()); // Utiliza o cookie-parser para gerenciar cookies
 app.use(csrf({ cookie: true })); // Configura o middleware CSRF com cookies
 
@@ -174,6 +174,12 @@ app.get('/user-personas/:username', isAuthenticated, (req, res) => {
 app.post('/create-persona', isAuthenticated, (req, res) => {
   const { name, description, image, public: isPublic } = req.body;
 
+  // Verifica se o usuário está autenticado corretamente
+  if (!currentLoggedInUser || !currentLoggedInUser.username) {
+    return res.status(401).json({ message: 'Usuário não autenticado.' });
+  }
+
+  // Verifica se os campos obrigatórios estão preenchidos
   if (!name || !description) {
     return res.status(400).json({ message: 'Nome e descrição são obrigatórios.' });
   }
@@ -182,9 +188,10 @@ app.post('/create-persona', isAuthenticated, (req, res) => {
   const userPersonas = readUserPersonas(currentLoggedInUser.username);
 
   // Verifica se a persona já existe
-  const personaExists = userPersonas.find((persona) => persona.name === name);
+  const personaExists = userPersonas.find((persona) => persona.name.toLowerCase() === name.toLowerCase());
   if (personaExists) {
-    return res.status(400).json({ message: 'Você já tem uma persona com esse nome.' });
+    // Retorna um status 409 (Conflict) para indicar que a persona já existe
+    return res.status(409).json({ message: 'Você já tem uma persona com esse nome.' });
   }
 
   // Cria uma nova persona
@@ -200,6 +207,7 @@ app.post('/create-persona', isAuthenticated, (req, res) => {
   userPersonas.push(newPersona);
   saveUserPersonas(currentLoggedInUser.username, userPersonas);
 
+  // Retorna um status 201 indicando que a persona foi criada com sucesso
   res.status(201).json({ message: 'Persona criada com sucesso!' });
 });
 
@@ -260,7 +268,7 @@ app.post('/generate-description', isAuthenticated, async (req, res) => {
   const { persona } = req.body;
 
   try {
-    const message = `Faça uma curta descrição da ${persona} no máximo um parágrafo.`;
+    const message = `Sem saudação faça uma curta descrição sucinta da ${persona}.`;
     
     // Definir a rota correta de acordo com o modelo atual
     const route = currentLoggedInUser.model === 'gpt-4' ? '/send-message-gpt-4' : '/send-message-llama';
@@ -274,6 +282,37 @@ app.post('/generate-description', isAuthenticated, async (req, res) => {
     console.error('Erro ao gerar descrição:', error);
     res.status(500).json({ error: 'Erro ao gerar a descrição da persona.' });
   }
+});
+
+// Rota para atualizar uma persona existente
+app.post('/update-persona', isAuthenticated, (req, res) => {
+  const { originalName, name, description, image } = req.body;
+
+  if (!originalName || !name || !description) {
+    return res.status(400).json({ message: 'Nome e descrição são obrigatórios.' });
+  }
+
+  // Lê as personas existentes do arquivo do usuário logado
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
+
+  // Encontra a persona original para editar
+  const personaIndex = userPersonas.findIndex((persona) => persona.name === originalName);
+  if (personaIndex === -1) {
+    return res.status(404).json({ message: 'Persona não encontrada.' });
+  }
+
+  // Atualiza os dados da persona encontrada
+  userPersonas[personaIndex] = {
+    ...userPersonas[personaIndex], // Mantém outros campos intactos
+    name,
+    description,
+    image: image || userPersonas[personaIndex].image // Mantém a imagem antiga se não for fornecida uma nova
+  };
+
+  // Salva as personas atualizadas no arquivo do usuário
+  saveUserPersonas(currentLoggedInUser.username, userPersonas);
+
+  res.status(200).json({ message: 'Persona atualizada com sucesso!' });
 });
 
 // Rota para excluir uma persona
@@ -330,7 +369,7 @@ app.post('/generate-image', isAuthenticated, async (req, res) => {
       }
     );
 
-    // Armazenar a imagem gerada localmente
+    // Armazenar a imagem gerada localmente na pasta 'public'
     const outputFilePath = path.join(__dirname, 'public', 'generated-image.png');
     fs.writeFileSync(outputFilePath, response.data);
 

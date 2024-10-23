@@ -17,6 +17,13 @@
         .logo-img {
             width: 300px; /* Ajuste o tamanho da imagem conforme necessário */
             margin-bottom: 1px;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            5% { transform: translateY(0px); }
+            60% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
     </style>
 </head>
@@ -26,10 +33,10 @@
 
     <div class="login-container">
         <!-- Aqui é onde a imagem do logo foi adicionada -->
-        <img src="images/logomlx.png" alt="Logo MLX" class="logo-img"> <!-- Adicionando a logo -->
-        <h1>MLX</h1>
-        <input type="text" class="form-control" id="username" placeholder="Usuário">
-        <input type="password" class="form-control" id="password" placeholder="Senha">
+        <img src="images/logomlx.png" alt="Logo MLX" class="logo-img" id="logo"> <!-- Adicionando a logo -->
+        <h1>MLXp</h1>
+        <input type="text" class="form-control" id="username" placeholder="Usuário" oninput="intensifyFloatEffect()">
+        <input type="password" class="form-control" id="password" placeholder="Senha" oninput="intensifyFloatEffect()">
         <input type="email" class="form-control email-field" id="email" placeholder="Email"> <!-- Campo de email oculto -->
         <button class="btn btn-login" onclick="login()">LOGIN
             <i class="fas fa-spinner fa-spin loading-icon"></i>
@@ -41,6 +48,20 @@
     </div>
 
     <script>
+        // Função para ajustar a intensidade do efeito flutuante
+        function intensifyFloatEffect() {
+            const username = document.getElementById('username').value.length;
+            const password = document.getElementById('password').value.length;
+            const logo = document.getElementById('logo');
+
+            // Soma dos caracteres inseridos
+            const totalLength = username + password;
+
+            // Defina o intervalo de intensidade de 10s (padrão) até 3s (intensidade máxima)
+            let animationDuration = 10 - Math.min(totalLength / 3, 6); // Intensifica conforme a digitação
+            logo.style.animationDuration = `${animationDuration}s`;
+        }
+
         // Efeito parallax para a imagem de fundo
         document.addEventListener('mousemove', function(e) {
             const background = document.querySelector('.background');
@@ -76,7 +97,7 @@
             const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
 
             if (!username || !password) {
-                alert('Por favor, preencha todos os campos de login.');
+                alert-warning('Por favor, preencha todos os campos de login.');
                 return;
             }
 
@@ -101,7 +122,7 @@
                 }
             } catch (error) {
                 console.error('Erro ao realizar o login:', error);
-                alert('Ocorreu um erro ao tentar fazer login.');
+                alert-warning('Ocorreu um erro ao tentar fazer login.');
             } finally {
                 toggleButtonLoading('btn-login', false);
             }
@@ -114,7 +135,7 @@
             const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
 
             if (!username || !password || !email) {
-                alert('Por favor, preencha todos os campos para realizar o cadastro.');
+                alert-warning('Por favor, preencha todos os campos para realizar o cadastro.');
                 return;
             }
 
@@ -131,7 +152,7 @@
                 });
 
                 if (response.ok) {
-                    alert('Cadastro realizado com sucesso!');
+                    alert-success('Cadastro realizado com sucesso!');
                     resetToLogin();
                 } else {
                     const data = await response.json();
@@ -139,7 +160,7 @@
                 }
             } catch (error) {
                 console.error('Erro ao realizar o cadastro:', error);
-                alert('Ocorreu um erro ao tentar realizar o cadastro.');
+                alert-warning('Ocorreu um erro ao tentar realizar o cadastro.');
             } finally {
                 toggleButtonLoading('btn-register', false);
             }

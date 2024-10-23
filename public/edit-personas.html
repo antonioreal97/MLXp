@@ -52,22 +52,22 @@
 
         personaEditList.innerHTML = ''; // Limpa o conteúdo atual
 
-        personas.forEach((persona) => {
+        personas.forEach((persona, index) => {
           const personaDiv = document.createElement('div');
           personaDiv.classList.add('persona-item');
           personaDiv.innerHTML = `
             <div class="persona-details">
               <img src="${persona.image}" alt="${persona.name}">
-              <input type="text" value="${persona.name}" class="edit-input" id="name-${persona.name}" />
-              <input type="text" value="${persona.description}" class="edit-input" id="description-${persona.name}" />
-              <input type="text" value="${persona.image}" class="edit-input" id="image-${persona.name}" />
+              <input type="text" value="${persona.name}" class="edit-input" id="name-${index}" />
+              <input type="text" value="${persona.description}" class="edit-input" id="description-${index}" />
+              <input type="text" value="${persona.image}" class="edit-input" id="image-${index}" />
             </div>
             <div class="edit-btns">
-              <button onclick="savePersona('${persona.name}')">Salvar</button>
+              <button onclick="savePersona('${persona.name}', ${index})">Salvar</button>
               <button onclick="togglePublicStatus('${persona.name}', ${persona.public})">
                 ${persona.public ? 'Tornar Privado' : 'Tornar Público'}
               </button>
-              <button onclick="deletePersona('${persona.name}')">Excluir</button> <!-- Botão para excluir -->
+              <button onclick="deletePersona('${persona.name}')">Excluir</button>
             </div>
           `;
           personaEditList.appendChild(personaDiv);
@@ -79,10 +79,10 @@
     }
 
     // Função para salvar as alterações de uma persona
-    async function savePersona(originalName) {
-      const name = document.getElementById(`name-${originalName}`).value;
-      const description = document.getElementById(`description-${originalName}`).value;
-      const image = document.getElementById(`image-${originalName}`).value;
+    async function savePersona(originalName, index) {
+      const name = document.getElementById(`name-${index}`).value;
+      const description = document.getElementById(`description-${index}`).value;
+      const image = document.getElementById(`image-${index}`).value;
 
       const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
 
@@ -105,6 +105,7 @@
         }
       } catch (error) {
         console.error('Erro ao salvar persona:', error);
+        alert('Erro ao salvar persona. Tente novamente mais tarde.');
       }
     }
 
@@ -132,6 +133,7 @@
         }
       } catch (error) {
         console.error('Erro ao atualizar status da persona:', error);
+        alert('Erro ao atualizar status. Tente novamente mais tarde.');
       }
     }
 
@@ -161,6 +163,7 @@
         }
       } catch (error) {
         console.error('Erro ao excluir persona:', error);
+        alert('Erro ao excluir persona. Tente novamente mais tarde.');
       }
     }
 

@@ -44,8 +44,8 @@
     }
 
     #selectedPersonas img {
-      width: 50px;
-      height: 50px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       margin: 5px;
       cursor: pointer;
@@ -81,33 +81,12 @@
       justify-content: space-between;
     }
 
-    /* Classes de cores para as personas */
-    .message.cristiano {
-      background-color: rgba(255, 215, 0, 0.2); /* Amarelo claro */
-      color: #d4af37;
+    .message {
+      margin-bottom: 10px;
       padding: 10px;
       border-radius: 8px;
-    }
-
-    .message.michael {
-      background-color: rgba(0, 123, 255, 0.2); /* Azul claro */
-      color: #007bff;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .message.messi {
-      background-color: rgba(0, 255, 127, 0.2); /* Verde claro */
-      color: #00ff7f;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .message.mac {
-      background-color: rgba(255, 105, 180, 0.2); /* Rosa claro */
-      color: #ff69b4;
-      padding: 10px;
-      border-radius: 8px;
+      word-wrap: break-word;
+      color: white;
     }
 
     .message.user {
@@ -116,6 +95,25 @@
       background-color: rgba(255, 255, 255, 0.2);
       padding: 10px;
       border-radius: 8px;
+    }
+
+    /* Estilos do botão de logout */
+    #logoutBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #080268;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 15px;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 100;
+    }
+
+    #logoutBtn:hover {
+      background-color: #285aff;
     }
 
   </style>
@@ -144,8 +142,7 @@
           <h1>ML<span>X</span>p</h1>
         </div>
         <!-- Chat centralizado -->
-        <div class="chat-box" id="chatBox">
-        </div>
+        <div class="chat-box" id="chatBox"></div>
         <div class="message-input">
           <input type="text" id="userMessage" placeholder="Digite sua mensagem..." onkeydown="handleKeyPress(event)">
           <button onclick="startGroupChat()"><i class="fas fa-paper-plane"></i></button>
@@ -163,16 +160,15 @@
     </div>
   </div>
 
+  <!-- Botão de logout -->
+  <button id="logoutBtn" title="Logout" onclick="logoutUser()">
+    <i class="fas fa-sign-out-alt"></i>
+  </button>
+
   <script>
     let selectedPersonas = [];
     let currentModel = 'llama'; // Modelo padrão inicial
-
-    const personaColors = {
-      'Cristiano Ronaldo': 'cristiano',
-      'Michael Jordan': 'michael',
-      'Lionel Messi': 'messi',
-      'Mac Miller': 'mac'
-    };
+    const personaColors = {}; // Armazenará cores das personas
 
     function goBack() {
       window.location.href = '/user-personas.html';
@@ -194,7 +190,6 @@
     async function loadUserPersonas(username) {
       try {
         const response = await fetch(`/user-personas/${encodeURIComponent(username)}`);
-
         if (!response.ok) {
           throw new Error(`Erro HTTP! status: ${response.status}`);
         }
@@ -263,6 +258,16 @@
       document.getElementById('model-name').innerText = currentModel === 'gpt-4' ? 'GPT-4' : 'LLAMA3';
     }
 
+    // Função para gerar uma cor aleatória
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
     async function startGroupChat() {
       if (selectedPersonas.length === 0) {
         alert('Por favor, selecione ao menos uma persona.');
@@ -300,6 +305,11 @@
 
           const data = await response.json();
           if (data.reply) {
+            // Define uma cor aleatória se a persona ainda não tiver uma
+            if (!personaColors[persona.name]) {
+              personaColors[persona.name] = getRandomColor();
+            }
+
             addMessageToChat(persona.name, data.reply, personaColors[persona.name]);
             lastResponse = data.reply;
           } else {
@@ -317,7 +327,8 @@
     function addMessageToChat(sender, message, colorClass = '') {
       const chatBox = document.getElementById('chatBox');
       const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message', colorClass);
+      messageDiv.classList.add('message');
+      messageDiv.style.backgroundColor = colorClass;
       messageDiv.innerText = `${sender}: ${message}`;
       chatBox.appendChild(messageDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
@@ -326,6 +337,28 @@
     function handleKeyPress(event) {
       if (event.key === 'Enter') {
         startGroupChat();
+      }
+    }
+
+    async function logoutUser() {
+      try {
+        const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN=')).split('=')[1];
+
+        const response = await fetch('/logout', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken
+          }
+        });
+        if (response.ok) {
+          window.location.href = 'index.html';
+        } else {
+          alert('Erro ao fazer logout.');
+        }
+      } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+        alert('Erro ao tentar fazer logout.');
       }
     }
 

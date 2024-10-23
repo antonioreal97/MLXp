@@ -21,9 +21,16 @@
     "public": false
   },
   {
-    "name": "Mac Miller",
-    "description": "Como Capricórnio, Mac Miller provavelmente é ambicioso, trabalhador e disciplinado. Ele pode ter uma aparência séria e reservada, mas também pode ter um lado mais leve e ser muito espirituoso e engraçado.",
-    "image": "https://i.scdn.co/image/ab6761610000e5ebed3b89aa602145fde71a163a",
+    "name": "Steve Jobs",
+    "description": "Steve Jobs tinha uma personalidade complexa, com muitos adjetivos que o descrevem, como visionário, gênio, perfeccionista, obsessivo, inflexível, mas também impiedoso, traiçoeiro e cruel.",
+    "image": "https://encenasaudemental.com/wp-content/uploads/2021/09/Jobs-K-583x423.jpg",
+    "owner": "antonio",
+    "public": false
+  },
+  {
+    "name": "Ronaldinho Gaucho",
+    "description": "Conhecido por ser uma pessoa alegre, carismática e descontraída. Ele é um ex-jogador de futebol que se destacou por sua técnica refinada, habilidade e criatividade.",
+    "image": "https://a.espncdn.com/photo/2021/0215/r815266_1296x729_16-9.jpg",
     "owner": "antonio",
     "public": false
   }

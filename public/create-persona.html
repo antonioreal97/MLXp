@@ -65,6 +65,27 @@
       width: 100%;
       margin-top: 10px;
     }
+
+    /* Estilos para os alertas */
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .alert-success {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .alert-warning {
+      background-color: #ffc107;
+      color: black;
+    }
   </style>
 </head>
 <body>
@@ -94,7 +115,25 @@
     </form>
   </div>
 
+  <div class="alert alert-success" id="alertSuccess">Persona criada com sucesso!</div>
+  <div class="alert alert-warning" id="alertWarning"></div>
+
   <script>
+    // Funções de alerta
+    function alertSuccess(message) {
+      const alertBox = document.getElementById('alertSuccess');
+      alertBox.textContent = message;
+      alertBox.style.display = 'block';
+      setTimeout(() => alertBox.style.display = 'none', 3000);
+    }
+
+    function alertWarning(message) {
+      const alertBox = document.getElementById('alertWarning');
+      alertBox.textContent = message;
+      alertBox.style.display = 'block';
+      setTimeout(() => alertBox.style.display = 'none', 3000);
+    }
+
     // Efeito parallax para a imagem de fundo
     document.addEventListener('mousemove', function(e) {
       const background = document.querySelector('.background');
@@ -111,7 +150,7 @@
       const isPublic = document.getElementById('personaPublic').checked; // Verifica se a persona deve ser pública
 
       if (!name || !description) {
-        alert('Por favor, preencha todos os campos obrigatórios.');
+        alertWarning('Por favor, preencha todos os campos obrigatórios.');
         return;
       }
 
@@ -128,17 +167,16 @@
           body: JSON.stringify({ name, description, image, public: isPublic }), // Inclui o campo 'public'
         });
 
-        const data = await response.json();
-
         if (response.status === 201) {
-          alert('Persona criada com sucesso!');
+          alertSuccess('Persona criada com sucesso!');
           window.location.href = '/user-personas.html'; // Redireciona para a página de personas criadas
         } else {
-          alert('Erro ao criar persona: ' + data.message);
+          const data = await response.json();
+          alertWarning('Erro ao criar persona: ' + (data.message || 'Erro desconhecido.'));
         }
       } catch (error) {
         console.error('Erro ao criar persona:', error);
-        alert('Erro ao criar persona.');
+        alertWarning('Erro ao criar persona.');
       }
     }
 
@@ -149,3 +187,4 @@
   </script>
 </body>
 </html>
+

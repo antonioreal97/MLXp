@@ -53,6 +53,7 @@ body, html {
 .logo-img {
   width: 500px; /* Ajuste o tamanho da logo */
   margin-bottom: 20px; /* Espaço entre a logo e o título */
+  animation: float 10s ease-in-out infinite
 }
 
 /* Estilos dos campos de entrada */
