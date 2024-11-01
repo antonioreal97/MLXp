@@ -154,25 +154,6 @@ body {
   background-position: center;
 }
 
-/* Estilos do botão de logout */
-#logoutBtn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  padding: 15px;
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 100;
-}
-
-#logoutBtn:hover {
-  background-color: #c82333;
-}
-
 /* Estilos da janela de confirmação */
 #logoutModal {
   display: none; /* O modal está oculto inicialmente */
@@ -215,4 +196,76 @@ body {
 .btn-no {
   background-color: #dc3545;
   color: white;
+}
+
+.persona-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.persona-circle {
+  width: 80px;
+  height: 80px;
+  background-color: #0056b3; /* Cor azul */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  overflow: hidden; /* Garante que a imagem não saia do círculo */
+}
+
+.persona-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.persona-name {
+  color: white;
+  text-align: center;
+}
+
+.persona-description {
+  margin-top: 10px;
+  color: #ddd;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.persona-btn:hover {
+  background-color: #004494;
+}
+
+/* Estilo para a descrição abaixo da persona selecionada */
+#personaDescription {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #ffffff;
+  text-align: center;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+/* Estilos do botão de logout */
+#logoutBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #080268;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+#logoutBtn:hover {
+  background-color: #285aff;
 }

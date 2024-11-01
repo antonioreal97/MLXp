@@ -174,40 +174,31 @@ app.get('/user-personas/:username', isAuthenticated, (req, res) => {
 app.post('/create-persona', isAuthenticated, (req, res) => {
   const { name, description, image, public: isPublic } = req.body;
 
-  // Verifica se o usuário está autenticado corretamente
   if (!currentLoggedInUser || !currentLoggedInUser.username) {
     return res.status(401).json({ message: 'Usuário não autenticado.' });
   }
 
-  // Verifica se os campos obrigatórios estão preenchidos
   if (!name || !description) {
     return res.status(400).json({ message: 'Nome e descrição são obrigatórios.' });
   }
 
-  // Lê as personas existentes do arquivo do usuário
   const userPersonas = readUserPersonas(currentLoggedInUser.username);
-
-  // Verifica se a persona já existe
   const personaExists = userPersonas.find((persona) => persona.name.toLowerCase() === name.toLowerCase());
   if (personaExists) {
-    // Retorna um status 409 (Conflict) para indicar que a persona já existe
     return res.status(409).json({ message: 'Você já tem uma persona com esse nome.' });
   }
 
-  // Cria uma nova persona
   const newPersona = {
     name,
     description,
     image: image || '/images/default.png',
     owner: currentLoggedInUser.username,
     public: isPublic || false,
+    messages: []
   };
 
-  // Adiciona a nova persona à lista e salva no arquivo do usuário
   userPersonas.push(newPersona);
   saveUserPersonas(currentLoggedInUser.username, userPersonas);
-
-  // Retorna um status 201 indicando que a persona foi criada com sucesso
   res.status(201).json({ message: 'Persona criada com sucesso!' });
 });
 
@@ -220,20 +211,111 @@ app.get('/get-logged-user', (req, res) => {
   }
 });
 
-// Rota para enviar mensagens para a OpenAI (GPT-4)
+// Função para garantir o arquivo de histórico de conversas
+const chatHistoryFilePath = path.join(__dirname, 'historico-chat.json');
+
+const loadChatHistory = () => {
+  if (!fs.existsSync(chatHistoryFilePath)) fs.writeFileSync(chatHistoryFilePath, JSON.stringify({}));
+  const data = fs.readFileSync(chatHistoryFilePath);
+  return JSON.parse(data);
+};
+
+const saveChatHistory = (history) => {
+  fs.writeFileSync(chatHistoryFilePath, JSON.stringify(history, null, 2));
+};
+
+// Rota para carregar o histórico de uma persona
+app.post('/load-persona-history', isAuthenticated, (req, res) => {
+  const { persona } = req.body;
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
+  const currentPersona = userPersonas.find(p => p.name === persona);
+  res.json({ history: currentPersona ? currentPersona.messages : [] });
+});
+
+app.post('/load-persona-description', isAuthenticated, (req, res) => {
+  const { persona } = req.body;
+  const chatHistory = loadChatHistory();
+  res.json({ description: chatHistory[persona]?.description || '' });
+});
+
+app.post('/save-persona-description', isAuthenticated, (req, res) => {
+  const { persona, description } = req.body;
+  const chatHistory = loadChatHistory();
+  chatHistory[persona] = chatHistory[persona] || {};
+  chatHistory[persona].description = description;
+  saveChatHistory(chatHistory);
+  res.status(200).json({ message: 'Descrição salva com sucesso.' });
+});
+
+app.post('/generate-description', isAuthenticated, async (req, res) => {
+  const { persona, model } = req.body;
+  const route = model === 'gpt-4' ? 'gpt-4' : 'llama3';
+  
+  try {
+    const description = await generateDescriptionForModel(route, persona);
+    const chatHistory = loadChatHistory();
+    chatHistory[persona] = chatHistory[persona] || {};
+    chatHistory[persona].description = description;
+    saveChatHistory(chatHistory);
+
+    res.json({ description });
+  } catch (error) {
+    console.error('Erro ao gerar descrição:', error);
+    res.status(500).json({ error: 'Erro ao gerar a descrição da persona.' });
+  }
+});
+
+// Função auxiliar para gerar a descrição com o modelo correto
+const generateDescriptionForModel = async (model, persona) => {
+  if (model === 'gpt-4') {
+    const response = await openai.createChatCompletion({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: `Descreva a persona ${persona} em até 50 caracteres.` }],
+    });
+    return response.data.choices[0].message.content;
+  } else {
+    const response = await axios.post('http://localhost:11434/api/generate', {
+      model: 'llama3',
+      prompt: `Descreva a persona ${persona} em até 50 caracteres.`,
+      stream: false
+    });
+    return response.data.response;
+  }
+};
+
+// Rota para enviar mensagens para a OpenAI (GPT-4) com histórico de contexto
 app.post('/send-message-gpt-4', isAuthenticated, async (req, res) => {
   const { persona, message } = req.body;
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
+  const currentPersona = userPersonas.find(p => p.name === persona);
+
+  if (!currentPersona) {
+    return res.status(404).json({ message: 'Persona não encontrada.' });
+  }
+
+  // Seleciona as últimas 10 mensagens para contexto
+  const contextMessages = currentPersona.messages.slice(-10).map(msg => ({
+    role: msg.role,
+    content: msg.content
+  }));
+
+  contextMessages.push({ role: 'user', content: message });
 
   try {
     const response = await openai.createChatCompletion({
       model: 'gpt-4',
       messages: [
-        { role: 'system', content: `Você agora só vai responder como se você fosse a persona: ${persona}. Jamais saia do personagem mesmo que você estiver interagindo com outra personalidade.` },
-        { role: 'user', content: message },
+        { role: 'system', content: `Você agora só vai responder como se fosse a persona: ${persona}. Jamais saia do personagem.` },
+        ...contextMessages
       ],
     });
 
     const aiMessage = response.data.choices[0].message.content;
+
+    currentPersona.messages.push({ role: 'user', content: message });
+    currentPersona.messages.push({ role: 'assistant', content: aiMessage });
+    saveUserPersonas(currentLoggedInUser.username, userPersonas);
+
     res.json({ reply: aiMessage });
   } catch (error) {
     console.error('Erro ao se comunicar com a OpenAI:', error);
@@ -241,21 +323,57 @@ app.post('/send-message-gpt-4', isAuthenticated, async (req, res) => {
   }
 });
 
-// Rota para enviar mensagens para o LLaMA rodando localmente
+// Rota para limpar o histórico de conversas de uma persona
+app.post('/clear-persona-history', isAuthenticated, (req, res) => {
+  const { persona } = req.body;
+
+  if (!persona) {
+    return res.status(400).json({ message: 'Nome da persona não fornecido.' });
+  }
+
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
+  const currentPersona = userPersonas.find(p => p.name === persona);
+
+  if (!currentPersona) {
+    return res.status(404).json({ message: 'Persona não encontrada.' });
+  }
+
+  currentPersona.messages = [];
+  saveUserPersonas(currentLoggedInUser.username, userPersonas);
+
+  res.status(200).json({ message: 'Histórico de conversa da persona foi limpo com sucesso.' });
+});
+
+// Rota para enviar mensagens para o LLaMA rodando localmente com histórico de contexto
 app.post('/send-message-llama', isAuthenticated, async (req, res) => {
   const { persona, message } = req.body;
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
+  const currentPersona = userPersonas.find(p => p.name === persona);
+
+  if (!currentPersona) {
+    return res.status(404).json({ message: 'Persona não encontrada.' });
+  }
+
+  // Garantir que `messages` é um array
+  if (!Array.isArray(currentPersona.messages)) {
+    currentPersona.messages = [];
+  }
+
+  const contextMessages = currentPersona.messages.slice(-10).map(msg => msg.content).join('\n');
 
   try {
-    // Fazendo requisição diretamente para a API Ollama
     const response = await axios.post('http://localhost:11434/api/generate', {
       model: 'llama3',
-      prompt: `Para melhor experiência do usuário, não informe ao usuário que você é um modelo de linguagem, somente se comporte como se você fosse a ${persona}: e responda a pergunta ${message} (Responda todas as perguntas em portugues-br)`,
+      prompt: `Para melhor experiência do usuário, se comporte como ${persona}.\n\n${contextMessages}\nUsuário: ${message}\nResposta:`,
       stream: false
     });
 
     const generatedText = response.data.response;
 
-    // Envia a resposta de volta para o frontend
+    currentPersona.messages.push({ role: 'user', content: message });
+    currentPersona.messages.push({ role: 'assistant', content: generatedText });
+    saveUserPersonas(currentLoggedInUser.username, userPersonas);
+
     res.json({ reply: generatedText });
   } catch (error) {
     console.error('Erro ao se comunicar com o Ollama/LLaMA:', error);
@@ -265,17 +383,14 @@ app.post('/send-message-llama', isAuthenticated, async (req, res) => {
 
 // Rota para gerar a descrição da persona (baseada no modelo selecionado)
 app.post('/generate-description', isAuthenticated, async (req, res) => {
-  const { persona } = req.body;
+  const { persona, model = 'llama3' } = req.body; // Padrão para 'llama3' se não for fornecido
 
   try {
-    const message = `Sem saudação faça uma curta descrição sucinta da ${persona}.`;
-    
-    // Definir a rota correta de acordo com o modelo atual
-    const route = currentLoggedInUser.model === 'gpt-4' ? '/send-message-gpt-4' : '/send-message-llama';
-    
-    // Fazer a requisição para a rota correta
-    const response = await axios.post(route, { persona, message });
-    const description = response.data.reply;
+    const description = await generateDescriptionForModel(model, persona);
+    const chatHistory = loadChatHistory();
+    chatHistory[persona] = chatHistory[persona] || {};
+    chatHistory[persona].description = description;
+    saveChatHistory(chatHistory);
 
     res.json({ description });
   } catch (error) {
@@ -292,26 +407,21 @@ app.post('/update-persona', isAuthenticated, (req, res) => {
     return res.status(400).json({ message: 'Nome e descrição são obrigatórios.' });
   }
 
-  // Lê as personas existentes do arquivo do usuário logado
   const userPersonas = readUserPersonas(currentLoggedInUser.username);
-
-  // Encontra a persona original para editar
   const personaIndex = userPersonas.findIndex((persona) => persona.name === originalName);
+
   if (personaIndex === -1) {
     return res.status(404).json({ message: 'Persona não encontrada.' });
   }
 
-  // Atualiza os dados da persona encontrada
   userPersonas[personaIndex] = {
-    ...userPersonas[personaIndex], // Mantém outros campos intactos
+    ...userPersonas[personaIndex],
     name,
     description,
-    image: image || userPersonas[personaIndex].image // Mantém a imagem antiga se não for fornecida uma nova
+    image: image || userPersonas[personaIndex].image 
   };
 
-  // Salva as personas atualizadas no arquivo do usuário
   saveUserPersonas(currentLoggedInUser.username, userPersonas);
-
   res.status(200).json({ message: 'Persona atualizada com sucesso!' });
 });
 
@@ -323,25 +433,17 @@ app.delete('/delete-persona', isAuthenticated, async (req, res) => {
     return res.status(400).json({ message: 'Nome da persona não fornecido' });
   }
 
-  try {
-    const userPersonas = readUserPersonas(currentLoggedInUser.username);
+  const userPersonas = readUserPersonas(currentLoggedInUser.username);
+  const personaIndex = userPersonas.findIndex((persona) => persona.name === name);
 
-    const personaIndex = userPersonas.findIndex((persona) => persona.name === name);
-    if (personaIndex === -1) {
-      return res.status(404).json({ message: 'Persona não encontrada.' });
-    }
-
-    // Remove a persona
-    userPersonas.splice(personaIndex, 1);
-
-    // Salva a nova lista de personas
-    saveUserPersonas(currentLoggedInUser.username, userPersonas);
-
-    res.status(200).json({ message: 'Persona excluída com sucesso!' });
-  } catch (error) {
-    console.error('Erro ao excluir persona:', error);
-    res.status(500).json({ message: 'Erro ao excluir persona.' });
+  if (personaIndex === -1) {
+    return res.status(404).json({ message: 'Persona não encontrada.' });
   }
+
+  userPersonas.splice(personaIndex, 1);
+  saveUserPersonas(currentLoggedInUser.username, userPersonas);
+
+  res.status(200).json({ message: 'Persona excluída com sucesso!' });
 });
 
 // Rota para geração de imagem com o modelo da Hugging Face
@@ -356,7 +458,7 @@ app.post('/generate-image', isAuthenticated, async (req, res) => {
 
   try {
     const response = await axios.post(
-      'https://api-inference.huggingface.co/models/glif/90s-anime-art', // Defina o modelo que será usado do Hugging Face 
+      'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large',
       {
         inputs: prompt,
       },
@@ -365,16 +467,20 @@ app.post('/generate-image', isAuthenticated, async (req, res) => {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-        responseType: 'arraybuffer', // Para tratar a imagem como binário
+        responseType: 'arraybuffer',
       }
     );
 
-    // Armazenar a imagem gerada localmente na pasta 'public'
-    const outputFilePath = path.join(__dirname, 'public', 'generated-image.png');
+    // Verifica se o diretório 'public-image' existe e o cria se necessário
+    const outputDir = path.join(__dirname, 'public-image');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir);
+    }
+
+    const outputFilePath = path.join(outputDir, 'generated-image.png');
     fs.writeFileSync(outputFilePath, response.data);
 
-    // Enviar o caminho da imagem gerada para o frontend
-    res.json({ imageUrl: '/generated-image.png' });
+    res.json({ imageUrl: '/public-image/generated-image.png' });
   } catch (error) {
     console.error('Erro ao gerar imagem:', error);
     res.status(500).json({ message: 'Erro ao gerar imagem.' });

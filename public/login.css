@@ -108,3 +108,21 @@ body, html {
 .btn-register.loading .loading-icon {
   display: block;
 }
+
+.login-container h1 {
+  margin-top: 1px;
+  font-size: 2rem;
+  color: #fff;
+}
+
+.logo-img {
+  width: 300px; /* Ajuste o tamanho da imagem conforme necessário */
+  margin-bottom: 1px;
+  animation: float 10s ease-in-out infinite;
+}
+
+@keyframes float {
+  5% { transform: translateY(0px); }
+  60% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}

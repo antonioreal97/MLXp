@@ -11,7 +11,8 @@
     "description": "Conhecido por ser o famoso \"obsessivo por evolução\", Jordan sempre teve seu comportamento esportivo elogiado, sendo exemplo para todas as gerações que o viram jogar.",
     "image": "https://laparola.com.br/wp-content/uploads/2017/06/michael-jordan.jpg",
     "owner": "antonio",
-    "public": false
+    "public": false,
+    "messages": []
   },
   {
     "name": "Lionel Messi",
@@ -32,6 +33,7 @@
     "description": "Conhecido por ser uma pessoa alegre, carismática e descontraída. Ele é um ex-jogador de futebol que se destacou por sua técnica refinada, habilidade e criatividade.",
     "image": "https://a.espncdn.com/photo/2021/0215/r815266_1296x729_16-9.jpg",
     "owner": "antonio",
-    "public": false
+    "public": false,
+    "messages": []
   }
 ]
