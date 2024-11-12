@@ -18,5 +18,10 @@
     "username": "joao",
     "password": "$2b$10$eM44vE/I0MabzPTiXBv06u6KHRJtzYMz00ahcQknAABKsSJqMcAXm",
     "email": "j@gmail.com"
+  },
+  {
+    "username": "caio",
+    "password": "$2b$10$HVkCVdLtniz1KBMAYAPtJeSxRCfzHYAB4d5.h9eSABf9w.CuEFdXG",
+    "email": "c@gmail.com"
   }
 ]

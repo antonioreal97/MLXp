@@ -1,140 +1,173 @@
 body {
-    background-image: url('images/fundo2.png'); /* Imagem de fundo */
-    background-size: cover; /* Garante que a imagem cubra todo o fundo */
-    background-position: center; /* Centraliza a imagem de fundo */
-    background-attachment: fixed; /* Faz a imagem ficar fixa ao rolar a página */
-    background-repeat: no-repeat; /* Não repete a imagem */
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
+  background-image: url('images/fundo2.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+  color: #e0e0e0;
+  font-family: Arial, sans-serif;
+}
+
+.logo {
+  color: #0056b3;
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.logo h1 span {
+  color: white;
+}
+
+.sidebar-top-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(42, 75, 92, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 250px;
+}
+
+.sidebar-top-right h5 {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.sidebar-top-right .btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+
+.image-generator {
+  background-color: rgba(74, 74, 74, 0.945);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  text-align: center;
+}
+
+.image-generator h5 {
+  font-weight: bold;
+  color: #0056b3;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+
+.image-generator input {
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+  font-size: 1.1em;
+}
+
+.image-generator input:focus {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.image-generator button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.image-generator button:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+#downloadImageLink {
+  display: none;
+  width: 100%;
+  padding: 15px;
+  background-color: #0056b3;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  margin-top: 15px;
+  text-decoration: none;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+#downloadImageLink:hover {
+  background-color: #004494;
+  transform: scale(1.05);
+}
+
+#generatedImage img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#loadingIcon {
+  color: #9e9e9e;
+  margin-top: 20px;
+}
+
+#loadingIcon p {
+  margin-top: 10px;
+  font-size: 1.1em;
+  color: #9e9e9e;
+}
+
+/* Botão de logout */
+#logoutBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+#logoutBtn:hover {
+  background-color: #004494;
+}
+
+/* Responsividade */
+@media only screen and (max-width: 768px) {
+  .logo h1 {
+    font-size: 2.5rem;
   }
-  
-  .container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+
+  .sidebar-top-right {
+    width: 90%;
+    right: 5%;
+    top: 20px;
   }
-  
-  .header {
-    background-color: rgba(42, 75, 92, 0.8); /* Cor da barra de título */
-    color: white;
+
+  .image-generator {
+    max-width: 90%;
+    margin: 20px auto;
     padding: 20px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1); /* Linha sutil abaixo */
   }
-  
-  .main-content-wrapper {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-  }
-  
-  .left-panel, .right-panel {
-    background-color: rgba(42, 75, 92, 0.8); /* Cor de fundo da barra lateral */
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-  }
-  
-  .left-panel {
-    flex: 1;
-    max-width: 250px;
-  }
-  
-  .right-panel {
-    flex: 1;
-    max-width: 250px;
-  }
-  
-  .main-content {
-    flex: 2;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-  }
-  
-  .user-profile {
-    margin-bottom: 20px;
-    font-size: 18px;
-    text-align: center;
-  }
-  
-  .btn-access-personas {
-    text-align: center;
-  }
-  
-  .btn-access-personas button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  
-  .btn-access-personas button:hover {
-    background-color: #0056b3;
-  }
-  
-  .image-generator h5 {
-    font-weight: bold;
-    color: #0056b3;
-  }
-  
-  .image-generator input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .image-generator button {
-    margin-top: 10px;
-    width: 100%;
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  
-  .image-generator button:hover {
-    background-color: #218838;
-  }
-  
-  #generatedImage img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Para telas pequenas */
-  @media only screen and (max-width: 768px) {
-    .main-content-wrapper {
-      flex-direction: column;
-    }
-  
-    .left-panel, .right-panel {
-      max-width: 100%;
-      margin-bottom: 20px;
-    }
-  
-    .main-content {
-      max-width: 100%;
-    }
-  }
-  
+}

@@ -13,6 +13,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '..', 'public'))); // Serve arquivos estáticos da pasta 'public'
+app.use(express.static(path.join(__dirname, '..', 'server')));
 app.use(cookieParser()); // Utiliza o cookie-parser para gerenciar cookies
 app.use(csrf({ cookie: true })); // Configura o middleware CSRF com cookies
 
@@ -374,6 +375,58 @@ app.post('/send-message-llama', isAuthenticated, async (req, res) => {
     currentPersona.messages.push({ role: 'assistant', content: generatedText });
     saveUserPersonas(currentLoggedInUser.username, userPersonas);
 
+    res.json({ reply: generatedText });
+  } catch (error) {
+    console.error('Erro ao se comunicar com o Ollama/LLaMA:', error);
+    res.status(500).json({ error: 'Erro ao se comunicar com o Ollama/LLaMA' });
+  }
+});
+
+// Rota para enviar uma mensagem única para GPT-4 sem histórico de contexto
+app.post('/send-message-gpt-4-no-context', isAuthenticated, async (req, res) => {
+  const { persona, message } = req.body;
+
+  if (!persona || !message) {
+    return res.status(400).json({ message: 'Persona ou mensagem não fornecidos.' });
+  }
+
+  try {
+    const response = await openai.createChatCompletion({
+      model: 'gpt-4',
+      messages: [
+        { role: 'system', content: `Você agora só vai responder como se fosse a persona: ${persona}. Jamais saia do personagem.` },
+        { role: 'user', content: message }
+      ],
+    });
+
+    const aiMessage = response.data.choices[0].message.content;
+
+    // Responde com a mensagem gerada, sem adicionar ao histórico
+    res.json({ reply: aiMessage });
+  } catch (error) {
+    console.error('Erro ao se comunicar com a OpenAI:', error);
+    res.status(500).json({ error: 'Erro ao se comunicar com a OpenAI' });
+  }
+});
+
+// Rota para enviar uma mensagem única para LLaMA sem histórico de contexto
+app.post('/send-message-llama-no-context', isAuthenticated, async (req, res) => {
+  const { persona, message } = req.body;
+
+  if (!persona || !message) {
+    return res.status(400).json({ message: 'Persona ou mensagem não fornecidos.' });
+  }
+
+  try {
+    const response = await axios.post('http://localhost:11434/api/generate', {
+      model: 'llama3',
+      prompt: `Para melhor experiência do usuário, se comporte como ${persona}.\n\nUsuário: ${message}\nResposta:`,
+      stream: false
+    });
+
+    const generatedText = response.data.response;
+
+    // Responde com a mensagem gerada, sem adicionar ao histórico
     res.json({ reply: generatedText });
   } catch (error) {
     console.error('Erro ao se comunicar com o Ollama/LLaMA:', error);
