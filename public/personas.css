@@ -1,0 +1,271 @@
+body {
+  background-image: url('images/fundo2.png'); /* Coloque o caminho correto da sua imagem */
+  background-size: cover; /* Garante que a imagem cubra todo o background */
+  background-position: center; /* Centraliza a imagem de fundo */
+  background-attachment: fixed; /* Faz com que a imagem fique fixa ao rolar a página */
+  background-repeat: no-repeat; /* Não repete a imagem */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Garante que o corpo ocupe a tela inteira */
+  overflow-x: hidden;
+  overflow-y: auto; /* Permite rolagem na página */
+}
+
+.container-fluid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ajusta o container para ocupar a altura total da página */
+}
+
+.sidebar {
+  background-color: rgba(42, 75, 92, 0.8); /* Cor de fundo com transparência */
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+  color: white;
+}
+
+.sidebar h5 {
+  font-weight: bold;
+}
+
+.sidebar .btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.persona-btn {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
+}
+
+.persona-btn:hover {
+  background-color: #004494;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  margin: 20px;
+  min-height: calc(100vh - 100px); /* Garante que o conteúdo principal ocupe o espaço necessário */
+}
+
+.main-content .logo {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.main-content .logo h1 {
+  font-size: 3rem;
+  color: #0056b3;
+}
+
+.main-content .logo h1 span {
+  color: white;
+}
+
+/* Área do chat no centro */
+.chat-box {
+  flex-grow: 1; /* Faz com que o chat cresça conforme necessário */
+  background-color: rgba(74, 74, 74, 0.945); /* Fundo com transparência */
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  overflow-y: auto; /* Ativa rolagem quando necessário */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* As mensagens começam no final da caixa */
+}
+
+.message {
+  margin-bottom: 10px;
+}
+
+.message.user {
+  text-align: right;
+  color: #ffffff;
+}
+
+.message.ai {
+  text-align: left;
+  color: #6cf0fa;
+}
+
+.main-content .message-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.575);
+  border-radius: 20px;
+  margin: 20px 0;
+}
+
+.main-content .message-input input {
+  border: none;
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.main-content .message-input button {
+  background: none;
+  border: none;
+  color: #0056b3;
+  font-size: 1.5rem;
+  margin-left: 10px;
+}
+
+.persona-selected {
+  background-color: rgba(74, 74, 74, 0.8); /* Fundo com transparência */
+  color: white;
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+}
+
+.persona-selected .persona-img {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+
+.persona-selected .persona-img {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Estilos da janela de confirmação */
+#logoutModal {
+  display: none; /* O modal está oculto inicialmente */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.logout-modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.logout-modal-content h5 {
+  margin-bottom: 20px;
+}
+
+.logout-modal-content button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-yes {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-no {
+  background-color: #dc3545;
+  color: white;
+}
+
+.persona-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.persona-circle {
+  width: 80px;
+  height: 80px;
+  background-color: #0056b3; /* Cor azul */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  overflow: hidden; /* Garante que a imagem não saia do círculo */
+}
+
+.persona-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.persona-name {
+  color: white;
+  text-align: center;
+}
+
+.persona-description {
+  margin-top: 10px;
+  color: #ddd;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.persona-btn:hover {
+  background-color: #004494;
+}
+
+/* Estilo para a descrição abaixo da persona selecionada */
+#personaDescription {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #ffffff;
+  text-align: center;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+/* Estilos do botão de logout */
+#logoutBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #080268;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+#logoutBtn:hover {
+  background-color: #285aff;
+}

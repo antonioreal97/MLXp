@@ -1,0 +1,39 @@
+[
+  {
+    "name": "Cristiano Ronaldo",
+    "description": "Desde muito novo, Cristiano Ronaldo afirmava: “Vou ser o melhor jogador do mundo”. Esta mentalidade é transcendente a todos os esportistas bem sucedidos do planeta.",
+    "image": "https://doiton.agency/wp-content/uploads/2024/08/Cristiano-Ronaldo-De-Humildes-Origens-a-Marca-Global.jpg",
+    "owner": "antonio",
+    "public": false
+  },
+  {
+    "name": "Michael Jordan",
+    "description": "Conhecido por ser o famoso \"obsessivo por evolução\", Jordan sempre teve seu comportamento esportivo elogiado, sendo exemplo para todas as gerações que o viram jogar.",
+    "image": "https://laparola.com.br/wp-content/uploads/2017/06/michael-jordan.jpg",
+    "owner": "antonio",
+    "public": false,
+    "messages": []
+  },
+  {
+    "name": "Lionel Messi",
+    "description": "Lionel Messi, jogador de futebol argentino, é descrito como uma pessoa introvertida, sensorial, sentimental e perceptiva, ou seja, com o subtipo de personalidade \"ISFP\".",
+    "image": "https://tntsports.com.br/__export/1719226800736/sites/esporteinterativo/img/2024/06/23/messi_world_cup_2022_gettyimages-1450128478_1.jpg_554688468.jpg",
+    "owner": "antonio",
+    "public": false
+  },
+  {
+    "name": "Steve Jobs",
+    "description": "Steve Jobs tinha uma personalidade complexa, com muitos adjetivos que o descrevem, como visionário, gênio, perfeccionista, obsessivo, inflexível, mas também impiedoso, traiçoeiro e cruel.",
+    "image": "https://encenasaudemental.com/wp-content/uploads/2021/09/Jobs-K-583x423.jpg",
+    "owner": "antonio",
+    "public": false
+  },
+  {
+    "name": "Ronaldinho Gaucho",
+    "description": "Conhecido por ser uma pessoa alegre, carismática e descontraída. Ele é um ex-jogador de futebol que se destacou por sua técnica refinada, habilidade e criatividade.",
+    "image": "https://a.espncdn.com/photo/2021/0215/r815266_1296x729_16-9.jpg",
+    "owner": "antonio",
+    "public": false,
+    "messages": []
+  }
+]

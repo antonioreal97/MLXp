@@ -5,8 +5,23 @@
     "email": "antonioreal97@gmail.com"
   },
   {
-    "username": "tulin",
-    "password": "$2b$10$wYAR6aN5hhQdptFEo3juM.KlizmAQUS.KyG3Vc/AWycE16GghsYwy",
-    "email": "t@gmail.com"
+    "username": "ana",
+    "password": "$2b$10$N8e1cGfPpM7zTo8UM3WmjOZyJ6ADM5GGCIbZus61CVL8NVSma5VGS",
+    "email": "a@gmail.com"
+  },
+  {
+    "username": "honda",
+    "password": "$2b$10$UyQLs1AY9J0128l.D4xATespKZUbgzkXLVzFaWiFWN.j273msI4yS",
+    "email": "l@gmail.com"
+  },
+  {
+    "username": "joao",
+    "password": "$2b$10$eM44vE/I0MabzPTiXBv06u6KHRJtzYMz00ahcQknAABKsSJqMcAXm",
+    "email": "j@gmail.com"
+  },
+  {
+    "username": "caio",
+    "password": "$2b$10$HVkCVdLtniz1KBMAYAPtJeSxRCfzHYAB4d5.h9eSABf9w.CuEFdXG",
+    "email": "c@gmail.com"
   }
 ]

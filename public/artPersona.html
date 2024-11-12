@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLXp - Geração de Imagem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="artPersona.css" rel="stylesheet"> <!-- Link para o arquivo CSS atualizado -->
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Logotipo Centralizado -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8 text-center">
+                <div class="logo">
+                    <h1>ML<span>X</span>p</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra lateral no canto superior direito -->
+        <div class="sidebar-top-right">
+            <h5>Usuário: <span id="username">Carregando...</span></h5>
+            <button class="btn btn-primary mb-3" onclick="accessMainPage()">Voltar</button>
+            <button class="btn btn-primary" onclick="accessUserPersonas()">Acessar Personas Criadas</button>
+        </div>
+
+        <!-- Conteúdo Principal Centralizado -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-10 col-lg-8 d-flex justify-content-center align-items-center">
+                <!-- Seção de geração de imagem -->
+                <div class="image-generator text-center">
+                    <h5>Gerar Imagem com Stable Diffusion</h5>
+                    <input type="text" id="imagePrompt" class="form-control my-3" placeholder="Digite o prompt para gerar a imagem" />
+                    <button class="btn btn-primary" onclick="generateImage()">Gerar Imagem</button>
+                    
+                    <!-- Aqui será exibida a imagem gerada -->
+                    <div id="generatedImage" class="mt-4"></div>
+                    
+                    <!-- Botão de download da imagem (invisível até a imagem ser gerada) -->
+                    <a id="downloadImageLink" class="btn btn-success mt-3" style="display: none;" download="generated_image.png">Download da Imagem</a>
+                    
+                    <!-- Ícone de loading -->
+                    <div id="loadingIcon" class="mt-3 text-center" style="display: none;">
+                        <i class="fas fa-spinner fa-spin fa-3x"></i>
+                        <p>Gerando imagem...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão de logout -->
+    <button id="logoutBtn" title="Logout" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt"></i>
+    </button>
+
+    <!-- Referência ao JavaScript externo -->
+    <script type="text/javascript" src="artPersona.js"></script>
+</body>
+</html>

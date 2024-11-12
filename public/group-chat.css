@@ -1,0 +1,352 @@
+body {
+  background-image: url('images/fundo2.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+html, body {
+  height: auto; /* Altere para auto para permitir crescimento */
+}
+
+.container-fluid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%; /* Permite que o container cresça com o conteúdo */
+}
+
+.sidebar {
+  background-color: rgba(42, 75, 92, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+  color: white;
+}
+
+.sidebar h5 {
+  font-weight: bold;
+}
+
+.sidebar .btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.persona-btn {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
+}
+
+.persona-btn:hover {
+  background-color: #004494;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  margin: 20px;
+}
+
+.main-content .logo {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.main-content .logo h1 {
+  font-size: 3rem;
+  color: #0056b3;
+}
+
+.main-content .logo h1 span {
+  color: white;
+}
+
+/* Área do chat */
+.chat-box {
+  flex-grow: 1; /* Permite que o chat cresça */
+  background-color: rgba(74, 74, 74, 0.945);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px;
+  overflow-y: auto; /* Permite rolar verticalmente */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Garante que o foco esteja na última mensagem */
+}
+
+/* Estilo de mensagens */
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+}
+
+/* Cores diferentes para cada persona */
+.message.cristiano {
+  background-color: rgba(255, 215, 0, 0.2); /* Amarelo claro */
+  color: #d4af37;
+}
+
+.message.michael {
+  background-color: rgba(0, 123, 255, 0.2); /* Azul claro */
+  color: #007bff;
+}
+
+.message.messi {
+  background-color: rgba(0, 255, 127, 0.2); /* Verde claro */
+  color: #00ff7f;
+}
+
+.message.mac {
+  background-color: rgba(255, 105, 180, 0.2); /* Rosa claro */
+  color: #ff69b4;
+}
+
+/* Mensagens do usuário */
+.message.user {
+  text-align: right;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.main-content .message-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.575);
+  border-radius: 20px;
+  margin: 20px;
+}
+
+.main-content .message-input input {
+  border: none;
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.main-content .message-input button {
+  background: none;
+  border: none;
+  color: #0056b3;
+  font-size: 1.5rem;
+  margin-left: 10px;
+}
+
+.persona-selected {
+  background-color: rgba(74, 74, 74, 0.8);
+  color: white;
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+}
+
+.persona-selected .persona-img {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+
+.persona-selected .persona-img {
+  background-size: cover;
+  background-position: center;
+}
+
+.model-selector {
+  margin-top: 15px;
+  background-color: #007bff80;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.model-selector select {
+  background-color: #007bff80;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.left-panel, .right-panel {
+  background-color: rgba(211, 211, 211, 0.323);
+  padding: 10px;
+}
+
+.left-panel, .main-content, .right-panel {
+  margin-bottom: 20px;
+}
+
+.persona-list img {
+  width: 80px;
+  height: 80px;
+  margin-right: 10px;
+  cursor: pointer;
+  background-color: transparent;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #007bffa0;
+  transition: transform 0.3s ease;
+}
+
+.persona-list img:hover {
+  transform: scale(1.1);
+}
+
+#selectedPersonas img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin: 5px;
+  cursor: pointer;
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .left-panel, .main-content, .right-panel {
+    margin-bottom: 0;
+  }
+}
+
+.persona-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.persona-circle {
+  width: 80px;
+  height: 80px;
+  background-color: #0056b3;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.persona-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.persona-name {
+  color: white;
+  text-align: center;
+}
+
+.persona-btn:hover {
+  background-color: #004494;
+}
+
+#selectedPersonas img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.message-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  margin: 20px;
+}
+
+.message-input input {
+  border: none;
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.message-input button {
+  background: none;
+  border: none;
+  color: #0056b3;
+  font-size: 1.5rem;
+  margin-left: 10px;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  word-wrap: break-word;
+  color: white;
+}
+
+.message.user {
+  text-align: right;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Estilos do botão de logout */
+#logoutBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #080268;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+#logoutBtn:hover {
+  background-color: #285aff;
+}

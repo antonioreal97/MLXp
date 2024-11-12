@@ -1,0 +1,80 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    overflow: hidden; /* Remove o scroll para manter o efeito imersivo */
+  }
+
+  /* Efeito parallax na imagem de fundo */
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 110%;
+    height: 110%;
+    background: url('images/create-personas.png') no-repeat center center fixed;
+    background-size: cover;
+    transition: transform 0.1s ease-out;
+    z-index: 1;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Escurece a imagem de fundo */
+    z-index: 2; /* Overlay acima da imagem de fundo, mas abaixo do conteúdo */
+    transition: filter 0.3s ease, brightness 0.3s ease;
+  }
+
+  .container {
+    background-color: rgba(240, 240, 240, 0.493); /* Fundo com opacidade */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 3; /* Conteúdo acima da overlay */
+    position: relative;
+    color: black; /* Cor do texto */
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: white;
+  }
+
+  .form-control {
+    margin-bottom: 15px;
+  }
+
+  .btn-create {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  /* Estilos para os alertas */
+  .alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+  }
+
+  .alert-success {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .alert-warning {
+    background-color: #ffc107;
+    color: black;
+  }
